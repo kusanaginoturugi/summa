@@ -20,14 +20,18 @@
       <span><%= t(".th.description") %></span>
       <span class="text-end"><%= t(".th.deposit") %></span>
       <span class="text-end"><%= t(".th.withdrawal") %></span>
+      <span class="text-end"><%= t(".th.cumulative") %></span>
     </div>
     <div class="entry-list">
+      <% cumulative = 0.to_d %>
       <% @form.parsed_rows.each do |row| %>
-        <div class="entry-row entry-row--list" style="grid-template-columns: 1fr 2fr 1fr 1fr;">
+        <% cumulative += row[:deposit].to_d - row[:withdrawal].to_d %>
+        <div class="entry-row entry-row--list" style="grid-template-columns: 1fr 2fr 1fr 1fr 1fr;">
           <span><%= row[:date] %></span>
           <span><%= row[:description] %></span>
           <span class="text-end"><%= number_with_delimiter(row[:deposit].to_i) %></span>
           <span class="text-end"><%= number_with_delimiter(row[:withdrawal].to_i) %></span>
+          <span class="text-end"><%= number_with_delimiter(cumulative.to_i) %></span>
         </div>
       <% end %>
     </div>

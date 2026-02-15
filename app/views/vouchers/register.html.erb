@@ -14,12 +14,16 @@
     <div class="flash flash--alert"><%= flash[:alert] %></div>
   <% end %>
 
-  <section class="card card--stacked">
-    <%= form_with url: register_vouchers_path, method: :get, local: true, class: "d-flex align-items-center gap-2 flex-wrap" do |f| %>
-      <span class="text-muted"><%= t("vouchers.register.account_label") %></span>
+  <section class="card card--stacked voucher-filter-wrap">
+    <%= form_with url: register_vouchers_path, method: :get, local: true, class: "voucher-filter-row" do |f| %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.account_label") %></span>
       <%= f.select :account_code,
         options_for_select(@accounts.map { |account| ["#{account.code} #{account.name}", account.code] }, @account_code),
-        {}, class: "form-select form-select-sm", onchange: "this.form.submit()" %>
+        {}, class: "form-select form-select-sm voucher-filter-control", onchange: "this.form.submit()" %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.description_filter_label") %></span>
+      <%= f.text_field :description, value: @description_filter, class: "form-control form-control-sm voucher-filter-control", placeholder: t("vouchers.register.description_filter_placeholder") %>
+      <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.register.description_filter_apply") %></button>
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
       <noscript>
         <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.index.filter_submit") %></button>
       </noscript>
@@ -63,7 +67,7 @@
             <% if editing %>
               <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
               <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
-              <tr>
+              <tr id="line-<%= row[:line].id %>">
                 <td>
                   <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
                     class: "form-control form-control-sm", required: true, form: edit_form_id %>
@@ -95,18 +99,18 @@
                 <td class="text-end register-actions-col">
                   <%= hidden_field_tag "register_update[account_code]", @account_code, form: edit_form_id %>
                   <button type="submit" class="btn btn-primary btn-sm register-edit-btn text-nowrap" form="<%= edit_form_id %>"><%= t("vouchers.register.update") %></button>
-                  <%= link_to t("vouchers.register.cancel"), register_vouchers_path(account_code: @account_code), class: "btn btn-outline-secondary btn-sm register-edit-btn text-nowrap mt-1" %>
+                  <%= link_to t("vouchers.register.cancel"), register_vouchers_path(account_code: @account_code, description: @description_filter, anchor: "line-#{row[:line].id}"), class: "btn btn-outline-secondary btn-sm register-edit-btn text-nowrap mt-1" %>
                 </td>
               </tr>
             <% else %>
-              <tr>
+              <tr id="line-<%= row[:line].id %>">
                 <td><%= row[:voucher].recorded_on&.strftime("%Y-%m-%d") %></td>
                 <td><%= [row[:counterpart_code], row[:counterpart_name]].compact.join(" ") %></td>
                 <td><%= row[:voucher].description.presence || "—" %></td>
                 <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
                 <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
                 <td class="text-end register-actions-col">
-                  <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, edit_line_id: row[:line].id), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                  <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, description: @description_filter, edit_line_id: row[:line].id, anchor: "line-#{row[:line].id}"), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
                 </td>
               </tr>
             <% end %>

@@ -73,6 +73,7 @@ class VouchersController < ApplicationController
   def register
     load_accounts
     @account_code = resolve_register_account
+    @description_filter = resolve_register_description_filter
     @edit_line_id = params[:edit_line_id].presence&.to_i
     prepare_register_view
     @entry_form = AccountRegisterEntryForm.new(
@@ -83,11 +84,12 @@ class VouchersController < ApplicationController
 
   def create_register
     load_accounts
+    @description_filter = resolve_register_description_filter
     @entry_form = AccountRegisterEntryForm.new(register_entry_params)
 
     if @entry_form.save
       session[:register_account_code] = @entry_form.account_code
-      redirect_to register_vouchers_path(account_code: @entry_form.account_code), notice: t("vouchers.flash.saved")
+      redirect_to register_vouchers_path(account_code: @entry_form.account_code, description: @description_filter), notice: t("vouchers.flash.saved")
     else
       @account_code = @entry_form.account_code.presence || resolve_register_account
       prepare_register_view
@@ -98,11 +100,12 @@ class VouchersController < ApplicationController
 
   def update_register_line
     load_accounts
+    @description_filter = resolve_register_description_filter
     @edit_form = AccountRegisterLineUpdateForm.new(register_update_params.merge(line_id: params[:id]))
 
     if @edit_form.save
       session[:register_account_code] = @edit_form.account_code
-      redirect_to register_vouchers_path(account_code: @edit_form.account_code), notice: t("vouchers.flash.updated")
+      redirect_to register_vouchers_path(account_code: @edit_form.account_code, description: @description_filter, anchor: "line-#{params[:id]}"), notice: t("vouchers.flash.updated")
     else
       @account_code = @edit_form.account_code.presence || resolve_register_account
       @edit_line_id = params[:id].to_i
@@ -176,7 +179,10 @@ class VouchersController < ApplicationController
     lines = VoucherLine.includes(voucher: :voucher_lines)
                        .joins(:voucher)
                        .where(account_code: @account.code)
-                       .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
+    if @description_filter.present?
+      lines = lines.where("vouchers.description LIKE ?", "%#{@description_filter}%")
+    end
+    lines = lines.order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
     @register_rows = lines.map do |line|
       counterpart = line.voucher.voucher_lines.find { |row| row.id != line.id }
       signed_amount = line.debit_amount.to_d - line.credit_amount.to_d
@@ -247,6 +253,15 @@ class VouchersController < ApplicationController
     end
 
     session[:register_account_code].presence
+  end
+
+  def resolve_register_description_filter
+    if params.key?(:description)
+      session[:register_description] = params[:description].presence
+      return params[:description].presence
+    end
+
+    session[:register_description].presence
   end
 
   def expand_account_codes(code)

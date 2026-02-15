@@ -118,6 +118,10 @@ ja:
       heading: "科目別入力"
       sub: "選択した科目の仕訳を一覧表示し、そのまま下段から追加できます。"
       account_label: "科目"
+      description_filter_label: "摘要で絞り込み"
+      description_filter_placeholder: "例）家賃"
+      description_filter_apply: "適用"
+      description_filter_clear: "クリア"
       description_placeholder: "摘要"
       add: "追加"
       edit: "編集"
@@ -211,6 +215,7 @@ ja:
         description: "摘要"
         deposit: "入金"
         withdrawal: "出金"
+        cumulative: "累計金額"
       submit: "プレビュー内容を保存"
       submit_note: "表示中の行を振替伝票として登録します。"
   accounts:
