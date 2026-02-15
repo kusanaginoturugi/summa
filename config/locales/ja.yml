@@ -9,6 +9,7 @@ ja:
       index: "伝票一覧"
       new: "伝票入力"
       quick: "簡易振替伝票入力"
+      register: "科目別入力"
       menu: "伝票入力"
     bank_imports: "CSV取込"
     accounts: "勘定科目"
@@ -32,6 +33,7 @@ ja:
       filter_submit: "適用"
       description_filter_label: "摘要で絞り込み"
       description_filter_placeholder: "例）家賃"
+      description_filter_clear: "クリア"
       new_button: "新規入力"
       edit: "編集"
       empty: "まだ振替伝票がありません。"
@@ -111,6 +113,22 @@ ja:
           credit_accounts: "貸方科目"
           amount: "金額"
         edit: "編集"
+    register:
+      title: "科目別入力 | Summa"
+      heading: "科目別入力"
+      sub: "選択した科目の仕訳を一覧表示し、そのまま下段から追加できます。"
+      account_label: "科目"
+      description_placeholder: "摘要"
+      add: "追加"
+      edit: "編集"
+      update: "更新"
+      cancel: "取消"
+      th:
+        recorded_on: "起票日"
+        description: "摘要"
+        counterpart: "資金移動（科目）"
+        amount: "費用"
+        balance: "貸借残高"
 
   activemodel:
     attributes:
@@ -120,6 +138,18 @@ ja:
         counter_account_code: "科目コード（相手）"
         amount: "金額"
         direction: "入出金"
+      account_register_entry_form:
+        account_code: "科目"
+        recorded_on: "起票日"
+        description: "摘要"
+        counterpart_code: "資金移動（科目）"
+        amount: "費用"
+      account_register_line_update_form:
+        account_code: "科目"
+        recorded_on: "起票日"
+        description: "摘要"
+        counterpart_code: "資金移動（科目）"
+        amount: "費用"
 
   errors:
     messages:

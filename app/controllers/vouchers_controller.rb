@@ -70,6 +70,49 @@ class VouchersController < ApplicationController
     @form = QuickVoucherForm.new(defaults.merge(recorded_on: defaults[:recorded_on] || Date.current))
   end
 
+  def register
+    load_accounts
+    @account_code = resolve_register_account
+    @edit_line_id = params[:edit_line_id].presence&.to_i
+    prepare_register_view
+    @entry_form = AccountRegisterEntryForm.new(
+      account_code: @account_code,
+      recorded_on: Date.current
+    )
+  end
+
+  def create_register
+    load_accounts
+    @entry_form = AccountRegisterEntryForm.new(register_entry_params)
+
+    if @entry_form.save
+      session[:register_account_code] = @entry_form.account_code
+      redirect_to register_vouchers_path(account_code: @entry_form.account_code), notice: t("vouchers.flash.saved")
+    else
+      @account_code = @entry_form.account_code.presence || resolve_register_account
+      prepare_register_view
+      flash.now[:alert] = @entry_form.errors.full_messages.join(" / ")
+      render :register, status: :unprocessable_entity
+    end
+  end
+
+  def update_register_line
+    load_accounts
+    @edit_form = AccountRegisterLineUpdateForm.new(register_update_params.merge(line_id: params[:id]))
+
+    if @edit_form.save
+      session[:register_account_code] = @edit_form.account_code
+      redirect_to register_vouchers_path(account_code: @edit_form.account_code), notice: t("vouchers.flash.updated")
+    else
+      @account_code = @edit_form.account_code.presence || resolve_register_account
+      @edit_line_id = params[:id].to_i
+      prepare_register_view
+      @entry_form = AccountRegisterEntryForm.new(account_code: @account_code, recorded_on: Date.current)
+      flash.now[:alert] = @edit_form.errors.full_messages.join(" / ")
+      render :register, status: :unprocessable_entity
+    end
+  end
+
   def create_quick
     @form = QuickVoucherForm.new(**quick_params)
     load_accounts
@@ -107,9 +150,68 @@ class VouchersController < ApplicationController
       :description_deposit, :description_withdrawal)
   end
 
+  def register_entry_params
+    params.require(:register_entry).permit(:account_code, :recorded_on, :description, :counterpart_code, :amount)
+  end
+
+  def register_update_params
+    params.require(:register_update).permit(:account_code, :recorded_on, :description, :counterpart_code, :amount)
+  end
+
   def prepare_quick_view
     @accounts_map = @accounts.index_by(&:code).transform_values(&:name)
     @recent_vouchers = Voucher.includes(:voucher_lines).order(created_at: :desc).limit(20)
+  end
+
+  def prepare_register_view
+    @account = @accounts.find { |a| a.code == @account_code } || @accounts.first
+    @account_code = @account&.code
+    session[:register_account_code] = @account_code if @account_code.present?
+    @accounts_map = @accounts.index_by(&:code).transform_values(&:name)
+
+    @register_rows = []
+    @current_balance = 0.to_d
+    return if @account.blank?
+
+    lines = VoucherLine.includes(voucher: :voucher_lines)
+                       .joins(:voucher)
+                       .where(account_code: @account.code)
+                       .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
+    @register_rows = lines.map do |line|
+      counterpart = line.voucher.voucher_lines.find { |row| row.id != line.id }
+      signed_amount = line.debit_amount.to_d - line.credit_amount.to_d
+      {
+        line: line,
+        voucher: line.voucher,
+        counterpart_code: counterpart&.account_code,
+        counterpart_name: @accounts_map[counterpart&.account_code],
+        amount: signed_amount
+      }
+    end
+    @register_rows.sort_by! do |row|
+      [
+        row[:voucher].recorded_on || Date.new(1900, 1, 1),
+        row[:counterpart_code].to_s,
+        row[:voucher].description.to_s,
+        row[:voucher].id.to_i,
+        row[:line].id.to_i
+      ]
+    end
+    @current_balance = @register_rows.sum { |row| row[:amount].to_d }
+
+    if @edit_line_id.present? && @edit_form.nil?
+      row = @register_rows.find { |item| item[:line].id == @edit_line_id }
+      if row
+        @edit_form = AccountRegisterLineUpdateForm.new(
+          line_id: row[:line].id,
+          account_code: @account_code,
+          recorded_on: row[:voucher].recorded_on,
+          description: row[:voucher].description,
+          counterpart_code: row[:counterpart_code],
+          amount: row[:amount]
+        )
+      end
+    end
   end
 
   def resolve_account_filter
@@ -136,6 +238,15 @@ class VouchersController < ApplicationController
     end
 
     session[:vouchers_description].presence
+  end
+
+  def resolve_register_account
+    if params.key?(:account_code)
+      session[:register_account_code] = params[:account_code].presence
+      return params[:account_code].presence
+    end
+
+    session[:register_account_code].presence
   end
 
   def expand_account_codes(code)

@@ -1,0 +1,154 @@
+<% content_for :title, t("vouchers.register.title") %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">REGISTER</p>
+    <h1><%= t("vouchers.register.heading") %></h1>
+    <p class="sub"><%= t("vouchers.register.sub") %></p>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="flash flash--notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <section class="card card--stacked">
+    <%= form_with url: register_vouchers_path, method: :get, local: true, class: "d-flex align-items-center gap-2 flex-wrap" do |f| %>
+      <span class="text-muted"><%= t("vouchers.register.account_label") %></span>
+      <%= f.select :account_code,
+        options_for_select(@accounts.map { |account| ["#{account.code} #{account.name}", account.code] }, @account_code),
+        {}, class: "form-select form-select-sm", onchange: "this.form.submit()" %>
+      <noscript>
+        <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.index.filter_submit") %></button>
+      </noscript>
+    <% end %>
+  </section>
+
+  <%= form_with scope: :register_entry, url: register_vouchers_path, method: :post, local: true, id: "register-add-form", data: { turbo: false } do %>
+  <% end %>
+
+  <% if @edit_line_id.present? %>
+    <%= form_with scope: :register_update, url: update_register_voucher_line_path(@edit_line_id), method: :patch, local: true, id: "register-edit-form-#{@edit_line_id}", data: { turbo: false } do %>
+    <% end %>
+  <% end %>
+
+  <section class="card card--stacked">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0 register-table">
+        <colgroup>
+          <col class="register-col-date">
+          <col class="register-col-counterpart">
+          <col class="register-col-description">
+          <col class="register-col-amount">
+          <col class="register-col-balance">
+          <col class="register-col-actions">
+        </colgroup>
+        <thead class="table-light">
+          <tr>
+            <th><%= t("vouchers.register.th.recorded_on") %></th>
+            <th><%= t("vouchers.register.th.counterpart") %></th>
+            <th><%= t("vouchers.register.th.description") %></th>
+            <th class="text-end"><%= t("vouchers.register.th.amount") %></th>
+            <th class="text-end"><%= t("vouchers.register.th.balance") %></th>
+            <th class="register-actions-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% balance = 0.to_d %>
+          <% @register_rows.each do |row| %>
+            <% balance += row[:amount].to_d %>
+            <% editing = @edit_line_id.present? && @edit_line_id == row[:line].id %>
+            <% if editing %>
+              <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
+              <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
+              <tr>
+                <td>
+                  <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
+                    class: "form-control form-control-sm", required: true, form: edit_form_id %>
+                </td>
+                <td>
+                  <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts_map.to_json %>">
+                    <div class="counterpart-group">
+                      <%= text_field_tag "register_update[counterpart_code]", @edit_form.counterpart_code || row[:counterpart_code],
+                        class: "form-control form-control-sm text-end counterpart-code",
+                        list: "register-account-codes",
+                        required: true,
+                        form: edit_form_id,
+                        data: { account_lookup_target: "code", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
+                      <span class="counterpart-name text-truncate" data-account-lookup-target="name"><%= @accounts_map[@edit_form.counterpart_code] || row[:counterpart_name] %></span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <%= text_field_tag "register_update[description]", @edit_form.description,
+                    class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: edit_form_id %>
+                </td>
+                <td>
+                  <%= number_field_tag "register_update[amount]", @edit_form.amount,
+                    step: 1, class: "form-control form-control-sm text-end", required: true, form: edit_form_id %>
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm text-end" readonly value="<%= number_with_delimiter(next_balance.to_i) %>">
+                </td>
+                <td class="text-end register-actions-col">
+                  <%= hidden_field_tag "register_update[account_code]", @account_code, form: edit_form_id %>
+                  <button type="submit" class="btn btn-primary btn-sm register-edit-btn text-nowrap" form="<%= edit_form_id %>"><%= t("vouchers.register.update") %></button>
+                  <%= link_to t("vouchers.register.cancel"), register_vouchers_path(account_code: @account_code), class: "btn btn-outline-secondary btn-sm register-edit-btn text-nowrap mt-1" %>
+                </td>
+              </tr>
+            <% else %>
+              <tr>
+                <td><%= row[:voucher].recorded_on&.strftime("%Y-%m-%d") %></td>
+                <td><%= [row[:counterpart_code], row[:counterpart_name]].compact.join(" ") %></td>
+                <td><%= row[:voucher].description.presence || "—" %></td>
+                <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
+                <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
+                <td class="text-end register-actions-col">
+                  <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, edit_line_id: row[:line].id), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+        <tfoot class="table-light">
+          <tr data-controller="register-entry" data-register-entry-current-balance-value="<%= @current_balance.to_f %>">
+            <td>
+              <%= date_field_tag "register_entry[recorded_on]", @entry_form.recorded_on || Date.current, class: "form-control form-control-sm", required: true, form: "register-add-form" %>
+            </td>
+            <td>
+              <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts_map.to_json %>">
+                <div class="counterpart-group">
+                  <%= text_field_tag "register_entry[counterpart_code]", @entry_form.counterpart_code, class: "form-control form-control-sm text-end counterpart-code", list: "register-account-codes", required: true, form: "register-add-form",
+                    data: { account_lookup_target: "code", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
+                  <span class="counterpart-name text-truncate" data-account-lookup-target="name"><%= @accounts_map[@entry_form.counterpart_code] %></span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <%= text_field_tag "register_entry[description]", @entry_form.description, class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: "register-add-form" %>
+            </td>
+            <td>
+              <%= number_field_tag "register_entry[amount]", @entry_form.amount, step: 1, class: "form-control form-control-sm text-end", required: true, form: "register-add-form",
+                data: { register_entry_target: "amount", action: "input->register-entry#recalculate" } %>
+            </td>
+            <td>
+              <input type="text" class="form-control form-control-sm text-end" readonly data-register-entry-target="nextBalance">
+            </td>
+            <td class="text-end register-actions-col">
+              <%= hidden_field_tag "register_entry[account_code]", @account_code, form: "register-add-form" %>
+              <button type="submit" class="btn btn-primary btn-sm" form="register-add-form"><%= t("vouchers.register.add") %></button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <datalist id="register-account-codes">
+      <% @accounts.each do |account| %>
+        <option value="<%= account.code %>"><%= "#{account.code} #{account.name}" %></option>
+      <% end %>
+    </datalist>
+  </section>
+</div>

@@ -1,4 +1,4 @@
-/*
+app/assets/stylesheets/application.css/*
  * This is a manifest file that'll be compiled into application.css.
  *
  * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
@@ -543,6 +543,49 @@ input:focus {
 
 .voucher-filter-row input.voucher-filter-control {
   min-width: 220px;
+}
+
+.register-actions-col {
+  width: 86px;
+  min-width: 86px;
+  white-space: nowrap;
+}
+
+.register-edit-btn {
+  min-width: 52px;
+}
+
+.register-table .register-col-date {
+  width: 132px;
+}
+
+.register-table .register-col-counterpart {
+  width: 200px;
+}
+
+.register-table .register-col-description {
+  width: auto;
+}
+
+.register-table .register-col-amount,
+.register-table .register-col-balance {
+  width: 96px;
+
+.register-table .register-col-actions {
+  width: 86px;
+}
+
+.register-table .counterpart-group {
+  min-width: 0;
+}
+
+.register-table .counterpart-code {
+  flex: 0 0 96px;
+}
+
+.register-table .counterpart-name {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 /* Minimal styles to make the navbar horizontal and tidy */
 
