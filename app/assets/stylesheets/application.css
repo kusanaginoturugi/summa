@@ -546,8 +546,8 @@ input:focus {
 }
 
 .register-actions-col {
-  width: 86px;
-  min-width: 86px;
+  width: 156px;
+  min-width: 156px;
   white-space: nowrap;
 }
 
@@ -570,9 +570,10 @@ input:focus {
 .register-table .register-col-amount,
 .register-table .register-col-balance {
   width: 96px;
+}
 
 .register-table .register-col-actions {
-  width: 86px;
+  width: 156px;
 }
 
 .register-table .counterpart-group {

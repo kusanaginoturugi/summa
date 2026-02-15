@@ -124,6 +124,7 @@ ja:
       description_filter_clear: "クリア"
       description_placeholder: "摘要"
       add: "追加"
+      detail: "詳細"
       edit: "編集"
       update: "更新"
       cancel: "取消"

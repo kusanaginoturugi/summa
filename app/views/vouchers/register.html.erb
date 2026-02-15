@@ -105,12 +105,30 @@
             <% else %>
               <tr id="line-<%= row[:line].id %>">
                 <td><%= row[:voucher].recorded_on&.strftime("%Y-%m-%d") %></td>
-                <td><%= [row[:counterpart_code], row[:counterpart_name]].compact.join(" ") %></td>
+                <td>
+                  <% counterpart_label = [row[:counterpart_code], row[:counterpart_name]].compact.join(" ") %>
+                  <% if row[:counterpart_code].present? %>
+                    <%= link_to counterpart_label, register_vouchers_path(account_code: row[:counterpart_code], description: @description_filter), class: "link-primary text-decoration-none" %>
+                  <% else %>
+                    <%= counterpart_label.presence || "—" %>
+                  <% end %>
+                </td>
                 <td><%= row[:voucher].description.presence || "—" %></td>
                 <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
                 <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
                 <td class="text-end register-actions-col">
-                  <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, description: @description_filter, edit_line_id: row[:line].id, anchor: "line-#{row[:line].id}"), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                  <div class="d-inline-flex gap-1">
+                    <%= link_to t("vouchers.register.detail"),
+                      edit_voucher_path(
+                        row[:voucher],
+                        return_to: "register",
+                        return_account_code: @account_code,
+                        return_description: @description_filter,
+                        return_anchor: "line-#{row[:line].id}"
+                      ),
+                      class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                    <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, description: @description_filter, edit_line_id: row[:line].id, anchor: "line-#{row[:line].id}"), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                  </div>
                 </td>
               </tr>
             <% end %>

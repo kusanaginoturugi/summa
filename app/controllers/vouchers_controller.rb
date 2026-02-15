@@ -45,13 +45,15 @@ class VouchersController < ApplicationController
 
   def edit
     load_accounts
+    load_return_context
   end
 
   def update
     load_accounts
+    load_return_context
     if @voucher.update(voucher_params)
       ImportRule.record_from_voucher(@voucher)
-      redirect_to vouchers_path, notice: t("vouchers.flash.updated", default: "振替伝票を更新しました")
+      redirect_to voucher_update_redirect_path, notice: t("vouchers.flash.updated", default: "振替伝票を更新しました")
     else
       flash.now[:alert] = @voucher.errors.full_messages.join(" / ")
       render :edit, status: :unprocessable_entity
@@ -262,6 +264,23 @@ class VouchersController < ApplicationController
     end
 
     session[:register_description].presence
+  end
+
+  def load_return_context
+    @return_to = params[:return_to].presence
+    @return_account_code = params[:return_account_code].presence
+    @return_description = params[:return_description].presence
+    @return_anchor = params[:return_anchor].presence
+  end
+
+  def voucher_update_redirect_path
+    return vouchers_path unless @return_to == "register"
+
+    opts = {}
+    opts[:account_code] = @return_account_code if @return_account_code.present?
+    opts[:description] = @return_description if @return_description.present?
+    opts[:anchor] = @return_anchor if @return_anchor.present?
+    register_vouchers_path(**opts)
   end
 
   def expand_account_codes(code)

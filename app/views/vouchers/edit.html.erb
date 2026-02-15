@@ -14,7 +14,14 @@
     <div class="flash flash--alert"><%= flash[:alert] %></div>
   <% end %>
 
-  <%= render "form", voucher: @voucher, accounts: @accounts, submit_label: t("vouchers.edit.submit", default: "更新") %>
+  <%= render "form",
+    voucher: @voucher,
+    accounts: @accounts,
+    submit_label: t("vouchers.edit.submit", default: "更新"),
+    return_to: @return_to,
+    return_account_code: @return_account_code,
+    return_description: @return_description,
+    return_anchor: @return_anchor %>
 
   <div class="actions" style="margin-top: 12px;">
     <%= button_to t("vouchers.edit.delete", default: "削除"), voucher_path(@voucher), method: :delete,

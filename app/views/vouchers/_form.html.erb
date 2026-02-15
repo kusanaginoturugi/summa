@@ -1,4 +1,13 @@
 <%= form_with model: voucher, url: voucher.persisted? ? voucher_path(voucher) : vouchers_path, method: voucher.persisted? ? :patch : :post, class: "voucher-form", data: { controller: "voucher-form", voucher_form_accounts_map_value: (@accounts || []).index_by(&:code).transform_values(&:name).to_json } do |f| %>
+  <% return_to = local_assigns[:return_to] %>
+  <% return_account_code = local_assigns[:return_account_code] %>
+  <% return_description = local_assigns[:return_description] %>
+  <% return_anchor = local_assigns[:return_anchor] %>
+  <%= hidden_field_tag :return_to, return_to if return_to.present? %>
+  <%= hidden_field_tag :return_account_code, return_account_code if return_account_code.present? %>
+  <%= hidden_field_tag :return_description, return_description if return_description.present? %>
+  <%= hidden_field_tag :return_anchor, return_anchor if return_anchor.present? %>
+
   <section class="card card--stacked">
     <div class="card__header">
       <div>
