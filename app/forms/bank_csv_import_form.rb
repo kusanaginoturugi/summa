@@ -219,12 +219,36 @@ class BankCsvImportForm
 
   def decimal(value)
     str = normalize_string(value)
-    negative = str.include?("▲") || str.include?("(") || str.start_with?("-")
+    # Normalize minus variants used in Japanese bank CSVs.
+    str = str.tr("−‐‑‒–—―ーｰ－", "-")
+    negative_format = str.include?("▲") || str.include?("(")
     cleaned = str.tr("¥￥,\\", "").gsub(/[()\s]/, "")
+    if cleaned.end_with?("-")
+      cleaned = "-#{cleaned[0...-1]}"
+    end
     num = BigDecimal(cleaned.presence || "0")
-    negative ? -num : num
+    negative_format && num.positive? ? -num : num
   rescue ArgumentError, TypeError
     0.to_d
+  end
+
+  def normalize_amounts(deposit, withdrawal)
+    dep = deposit.to_d
+    wdr = withdrawal.to_d
+
+    # Some bank CSVs output withdrawals as negative values.
+    if wdr.negative?
+      dep += wdr.abs
+      wdr = 0.to_d
+    end
+
+    # Normalize opposite case as well for robustness.
+    if dep.negative?
+      wdr += dep.abs
+      dep = 0.to_d
+    end
+
+    [dep, wdr]
   end
 
   def normalize_string(val)
@@ -263,6 +287,7 @@ class BankCsvImportForm
       begin
         deposit = decimal(cell(row, deposit_column))
         withdrawal = decimal(cell(row, withdrawal_column))
+        deposit, withdrawal = normalize_amounts(deposit, withdrawal)
         if deposit.zero? && withdrawal.zero?
           skip_row(line_no, :no_amount)
           next

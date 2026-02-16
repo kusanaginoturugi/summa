@@ -67,7 +67,7 @@
             <% if editing %>
               <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
               <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
-              <tr id="line-<%= row[:line].id %>">
+              <tr id="line-<%= row[:line].id %>" data-controller="register-focus">
                 <td>
                   <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
                     class: "form-control form-control-sm", required: true, form: edit_form_id %>
@@ -80,7 +80,7 @@
                         list: "register-account-codes",
                         required: true,
                         form: edit_form_id,
-                        data: { account_lookup_target: "code", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
+                        data: { account_lookup_target: "code", register_focus_target: "input", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
                       <span class="counterpart-name text-truncate" data-account-lookup-target="name"><%= @accounts_map[@edit_form.counterpart_code] || row[:counterpart_name] %></span>
                     </div>
                   </div>
