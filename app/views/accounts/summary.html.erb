@@ -1,0 +1,53 @@
+<% content_for :title, t("accounts.summary.title") %>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <p class="text-uppercase text-muted mb-1 small">ACCOUNTS</p>
+      <h1 class="h3 mb-1"><%= t("accounts.summary.heading") %></h1>
+      <p class="text-muted mb-2"><%= t("accounts.summary.sub") %></p>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to t("accounts.summary.back"), accounts_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% grouped = @summaries.group_by(&:category) %>
+  <% if grouped.values.flatten.blank? %>
+    <div class="alert alert-info mb-0"><%= t("accounts.summary.empty") %></div>
+  <% else %>
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th><%= t("accounts.summary.th.account") %></th>
+              <th class="text-end"><%= t("accounts.summary.th.total_amount") %></th>
+              <th class="text-end"><%= t("accounts.summary.th.count") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Account::CATEGORIES.each do |category| %>
+              <% rows = grouped[category] || [] %>
+              <% next if rows.blank? %>
+
+              <tr class="table-secondary">
+                <td colspan="3" class="fw-bold"><%= t("accounts.categories.#{category}") %></td>
+              </tr>
+
+              <% rows.each do |row| %>
+                <tr class="cat-<%= category %>">
+                  <td>
+                    <%= link_to "#{row.code} #{row.name}", register_vouchers_path(account_code: row.code), class: "link-primary text-decoration-none" %>
+                  </td>
+                  <td class="text-end"><%= number_with_delimiter(row.total_amount.to_d.to_i) %></td>
+                  <td class="text-end"><%= number_with_delimiter(row.entry_count.to_i) %></td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

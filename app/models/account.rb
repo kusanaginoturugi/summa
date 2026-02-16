@@ -1,6 +1,7 @@
 class Account < ApplicationRecord
   belongs_to :parent, class_name: "Account", primary_key: :code, foreign_key: :parent_code, optional: true
   has_many :children, class_name: "Account", primary_key: :code, foreign_key: :parent_code, dependent: :nullify
+  has_many :voucher_lines, primary_key: :code, foreign_key: :account_code
 
   CATEGORIES = %w[asset liability equity revenue expense].freeze
 

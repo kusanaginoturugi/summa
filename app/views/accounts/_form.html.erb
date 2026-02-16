@@ -2,7 +2,7 @@
   <div class="field-grid" data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts.index_by(&:code).transform_values(&:name).to_json %>">
     <div class="field">
       <%= form.label :code, t("accounts.form.code") %>
-      <%= form.text_field :code, required: true, autofocus: form.object.new_record?, list: "account-codes", data: { action: "input->account-lookup#update focus->account-lookup#suggest", account_lookup_target: "code" } %>
+      <%= form.text_field :code, required: true, autofocus: form.object.new_record?, list: "account-codes", inputmode: "numeric", data: { action: "input->account-lookup#update focus->account-lookup#suggest", account_lookup_target: "code" } %>
     </div>
     <div class="field">
       <%= form.label :name, t("accounts.form.name") %>

@@ -78,6 +78,7 @@
                       <%= text_field_tag "register_update[counterpart_code]", @edit_form.counterpart_code || row[:counterpart_code],
                         class: "form-control form-control-sm text-end counterpart-code",
                         list: "register-account-codes",
+                        inputmode: "numeric",
                         required: true,
                         form: edit_form_id,
                         data: { account_lookup_target: "code", register_focus_target: "input", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
@@ -108,7 +109,14 @@
                 <td>
                   <% counterpart_label = [row[:counterpart_code], row[:counterpart_name]].compact.join(" ") %>
                   <% if row[:counterpart_code].present? %>
-                    <%= link_to counterpart_label, register_vouchers_path(account_code: row[:counterpart_code], description: @description_filter), class: "link-primary text-decoration-none" %>
+                    <%= link_to counterpart_label,
+                      register_vouchers_path(
+                        account_code: @account_code,
+                        description: @description_filter,
+                        edit_line_id: row[:line].id,
+                        anchor: "line-#{row[:line].id}"
+                      ),
+                      class: "link-primary text-decoration-none" %>
                   <% else %>
                     <%= counterpart_label.presence || "—" %>
                   <% end %>
@@ -127,7 +135,11 @@
                         return_anchor: "line-#{row[:line].id}"
                       ),
                       class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
-                    <%= link_to t("vouchers.register.edit"), register_vouchers_path(account_code: @account_code, description: @description_filter, edit_line_id: row[:line].id, anchor: "line-#{row[:line].id}"), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                    <% if row[:counterpart_code].present? %>
+                      <%= link_to t("vouchers.register.account"), register_vouchers_path(account_code: row[:counterpart_code], description: @description_filter), class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
+                    <% else %>
+                      <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" disabled><%= t("vouchers.register.account") %></button>
+                    <% end %>
                   </div>
                 </td>
               </tr>
@@ -143,6 +155,7 @@
               <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts_map.to_json %>">
                 <div class="counterpart-group">
                   <%= text_field_tag "register_entry[counterpart_code]", @entry_form.counterpart_code, class: "form-control form-control-sm text-end counterpart-code", list: "register-account-codes", required: true, form: "register-add-form",
+                    inputmode: "numeric",
                     data: { account_lookup_target: "code", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
                   <span class="counterpart-name text-truncate" data-account-lookup-target="name"><%= @accounts_map[@entry_form.counterpart_code] %></span>
                 </div>

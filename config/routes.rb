@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   patch "vouchers/register/lines/:id" => "vouchers#update_register_line", as: :update_register_voucher_line
   resources :bank_imports, only: %i[new create]
   resources :accounts, only: %i[index new create edit update destroy] do
+    get :summary, on: :collection
     get :entries, on: :member
   end
   resources :voucher_lines, only: [] do

@@ -56,7 +56,7 @@
       <% voucher.voucher_lines.each do |line| %>
         <%= f.fields_for :voucher_lines, line do |lf| %>
           <div class="entry-row" data-voucher-form-target="row" data-existing-line="true">
-            <%= lf.text_field :account_code, placeholder: t("vouchers.new.account_code_placeholder"), list: "account-codes", data: { action: "input->voucher-form#updateAccountName focus->voucher-form#suggest", voucher_form_target: "accountCode" } %>
+            <%= lf.text_field :account_code, placeholder: t("vouchers.new.account_code_placeholder"), list: "account-codes", inputmode: "numeric", data: { action: "input->voucher-form#updateAccountName focus->voucher-form#suggest", voucher_form_target: "accountCode" } %>
             <span class="account-name" data-voucher-form-target="accountName"><%= line.account.presence || "" %></span>
             <%= lf.number_field :debit_amount, value: (line.debit_amount.to_d.zero? ? nil : line.debit_amount), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
             <%= lf.number_field :credit_amount, value: (line.credit_amount.to_d.zero? ? nil : line.credit_amount), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
@@ -70,7 +70,7 @@
 
     <template data-voucher-form-target="rowTemplate">
       <div class="entry-row" data-voucher-form-target="row">
-        <input type="text" name="voucher[voucher_lines_attributes][__INDEX__][account_code]" placeholder="<%= t("vouchers.new.account_code") %>" list="account-codes" data-action="input->voucher-form#updateAccountName focus->voucher-form#suggest" data-voucher-form-target="accountCode">
+        <input type="text" name="voucher[voucher_lines_attributes][__INDEX__][account_code]" placeholder="<%= t("vouchers.new.account_code") %>" list="account-codes" inputmode="numeric" data-action="input->voucher-form#updateAccountName focus->voucher-form#suggest" data-voucher-form-target="accountCode">
         <span class="account-name" data-voucher-form-target="accountName"></span>
         <input type="number" step="1" min="0" class="text-end" name="voucher[voucher_lines_attributes][__INDEX__][debit_amount]" data-action="input->voucher-form#recalculate" inputmode="numeric">
         <input type="number" step="1" min="0" class="text-end" name="voucher[voucher_lines_attributes][__INDEX__][credit_amount]" data-action="input->voucher-form#recalculate" inputmode="numeric">

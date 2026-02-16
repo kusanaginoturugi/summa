@@ -9,6 +9,18 @@ class AccountsController < ApplicationController
     @account = Account.new
   end
 
+  def summary
+    @summaries = Account.left_joins(:voucher_lines)
+                        .select(
+                          "accounts.code, accounts.name, accounts.category, " \
+                          "COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0) AS total_amount, " \
+                          "COUNT(voucher_lines.id) AS entry_count"
+                        )
+                        .group("accounts.code, accounts.name, accounts.category")
+                        .having("ABS(COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0)) > 0")
+                        .order(:code)
+  end
+
   def create
     @account = Account.new(account_params)
     if @account.save

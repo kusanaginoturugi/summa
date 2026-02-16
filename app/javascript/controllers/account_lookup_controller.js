@@ -7,9 +7,27 @@ export default class extends Controller {
   connect() {
     this.entries = Object.entries(this.accountsMapValue || {})
     this.sortedEntries = this.entries.slice().sort((a, b) => a[0].localeCompare(b[0], "ja", { numeric: true }))
+    this.isComposing = false
+    this.onCompositionStart = () => {
+      this.isComposing = true
+    }
+    this.onCompositionEnd = (event) => {
+      this.isComposing = false
+      this.update(event)
+    }
+    this.element.addEventListener("compositionstart", this.onCompositionStart, true)
+    this.element.addEventListener("compositionend", this.onCompositionEnd, true)
+  }
+
+  disconnect() {
+    this.element.removeEventListener("compositionstart", this.onCompositionStart, true)
+    this.element.removeEventListener("compositionend", this.onCompositionEnd, true)
   }
 
   update(event) {
+    if (this.isComposing && event?.type !== "compositionend") return
+    if (event?.isComposing) return
+
     const input = event?.target
     const code = input ? input.value.trim() : this.codeTarget.value.trim()
     const name = this.lookup(code) || ""
@@ -29,6 +47,9 @@ export default class extends Controller {
   }
 
   suggest(event) {
+    if (this.isComposing && event?.type !== "compositionend") return
+    if (event?.isComposing) return
+
     const input = event?.target
     if (!input) return
     const listId = input.getAttribute("list")

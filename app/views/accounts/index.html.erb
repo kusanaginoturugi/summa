@@ -13,6 +13,7 @@
       </div>
     </div>
     <div class="d-flex gap-2">
+      <%= link_to t("accounts.index.summary_button"), summary_accounts_path, class: "btn btn-outline-secondary" %>
       <%= link_to t("accounts.index.new_button"), new_account_path, class: "btn btn-primary" %>
     </div>
   </div>
@@ -30,11 +31,11 @@
         <thead class="table-light">
           <tr>
             <th style="width: 10%;"><%= t("accounts.index.th.code") %></th>
-            <th style="width: 25%;"><%= t("accounts.index.th.name") %></th>
-            <th style="width: 25%;"><%= t("accounts.index.th.details") %></th>
+            <th style="width: 24%;"><%= t("accounts.index.th.name") %></th>
+            <th style="width: 16%;" class="text-nowrap"><%= t("accounts.index.th.details") %></th>
             <th style="width: 10%;"><%= t("accounts.index.th.category") %></th>
             <th style="width: 10%;"><%= t("accounts.index.th.parent") %></th>
-            <th style="width: 20%;" class="text-end"><%= t("accounts.index.th.actions") %></th>
+            <th style="width: 30%;" class="text-end text-nowrap"><%= t("accounts.index.th.actions") %></th>
           </tr>
         </thead>
         <tbody>
@@ -56,7 +57,7 @@
                   <td>
                     <%= f.text_field :name, class: "form-control form-control-sm", required: true, style: "padding-left: #{level * 16}px;" %>
                   </td>
-                  <td>
+                  <td class="text-nowrap">
                     <%= f.text_field :details, class: "form-control form-control-sm" %>
                   </td>
                   <td>
@@ -67,13 +68,14 @@
                       options_for_select([[t("accounts.form.no_parent"), nil]] + @accounts.reject { |a| a.code == acc.code }.map { |a| ["#{a.code} #{a.name}", a.code] }, acc.parent_code),
                       {}, class: "form-select form-select-sm" %>
                   </td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-2">
-                      <%= link_to t("accounts.index.entries"), entries_account_path(acc), class: "btn btn-outline-secondary btn-sm" %>
-                      <button type="submit" class="btn btn-sm" style="background:#0d6efd; color:#fff; border-color:#0d6efd;"><%= t("accounts.index.save") %></button>
+                  <td class="text-end text-nowrap">
+                    <div class="d-flex justify-content-end gap-2 flex-nowrap">
+                      <%= link_to t("accounts.index.register"), register_vouchers_path(account_code: acc.code), class: "btn btn-outline-secondary btn-sm text-nowrap" %>
+                      <%= link_to t("accounts.index.entries"), entries_account_path(acc), class: "btn btn-outline-secondary btn-sm text-nowrap" %>
+                      <button type="submit" class="btn btn-sm text-nowrap" style="background:#0d6efd; color:#fff; border-color:#0d6efd;"><%= t("accounts.index.save") %></button>
                       <%= link_to t("accounts.index.delete"), account_path(acc),
                         data: { turbo_method: :delete, turbo_confirm: t("accounts.index.delete_confirm", name: acc.name) },
-                        class: "btn btn-sm", style: "background:#dc3545; color:#fff; border-color:#dc3545;" %>
+                        class: "btn btn-sm text-nowrap", style: "background:#dc3545; color:#fff; border-color:#dc3545;" %>
                     </div>
                   </td>
                 </tr>

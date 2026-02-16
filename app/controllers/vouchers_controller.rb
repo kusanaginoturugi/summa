@@ -80,7 +80,7 @@ class VouchersController < ApplicationController
     prepare_register_view
     @entry_form = AccountRegisterEntryForm.new(
       account_code: @account_code,
-      recorded_on: Date.current
+      recorded_on: resolve_register_recorded_on
     )
   end
 
@@ -91,6 +91,7 @@ class VouchersController < ApplicationController
 
     if @entry_form.save
       session[:register_account_code] = @entry_form.account_code
+      remember_register_recorded_on(@entry_form.recorded_on)
       redirect_to register_vouchers_path(account_code: @entry_form.account_code, description: @description_filter), notice: t("vouchers.flash.saved")
     else
       @account_code = @entry_form.account_code.presence || resolve_register_account
@@ -112,7 +113,7 @@ class VouchersController < ApplicationController
       @account_code = @edit_form.account_code.presence || resolve_register_account
       @edit_line_id = params[:id].to_i
       prepare_register_view
-      @entry_form = AccountRegisterEntryForm.new(account_code: @account_code, recorded_on: Date.current)
+      @entry_form = AccountRegisterEntryForm.new(account_code: @account_code, recorded_on: resolve_register_recorded_on)
       flash.now[:alert] = @edit_form.errors.full_messages.join(" / ")
       render :register, status: :unprocessable_entity
     end
@@ -264,6 +265,21 @@ class VouchersController < ApplicationController
     end
 
     session[:register_description].presence
+  end
+
+  def resolve_register_recorded_on
+    raw = session[:register_recorded_on].presence
+    return Date.current if raw.blank?
+
+    Date.parse(raw)
+  rescue ArgumentError
+    Date.current
+  end
+
+  def remember_register_recorded_on(value)
+    return if value.blank?
+
+    session[:register_recorded_on] = value.to_date.iso8601
   end
 
   def load_return_context

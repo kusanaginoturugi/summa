@@ -24,7 +24,7 @@
         <select name="bank_csv_import_form[setting_id]" data-bank-import-form-target="settingSelect" data-action="change->bank-import-form#load">
           <option value=""><%= t(".setting_placeholder") %></option>
           <% @settings.each do |setting| %>
-            <option value="<%= setting.id %>" data-mapping="<%= setting.slice(:bank_account_code, :deposit_counter_code, :withdrawal_counter_code, :date_column, :description_column, :deposit_column, :withdrawal_column, :has_header).to_json %>">
+            <option value="<%= setting.id %>" data-mapping="<%= setting.slice(:bank_account_code, :deposit_counter_code, :withdrawal_counter_code, :date_column, :description_column, :deposit_column, :withdrawal_column, :has_header).to_json %>" <%= "selected" if @form.setting_id.to_s == setting.id.to_s %>>
               <%= setting.name %>
             </option>
           <% end %>

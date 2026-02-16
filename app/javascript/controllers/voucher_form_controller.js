@@ -10,6 +10,21 @@ export default class extends Controller {
     this.refreshAllAccountNames()
     this.accountEntries = Object.entries(this.accountsMapValue || {})
     this.sortedEntries = this.accountEntries.slice().sort((a, b) => a[0].localeCompare(b[0], "ja", { numeric: true }))
+    this.isComposing = false
+    this.onCompositionStart = () => {
+      this.isComposing = true
+    }
+    this.onCompositionEnd = (event) => {
+      this.isComposing = false
+      this.updateAccountName(event)
+    }
+    this.element.addEventListener("compositionstart", this.onCompositionStart, true)
+    this.element.addEventListener("compositionend", this.onCompositionEnd, true)
+  }
+
+  disconnect() {
+    this.element.removeEventListener("compositionstart", this.onCompositionStart, true)
+    this.element.removeEventListener("compositionend", this.onCompositionEnd, true)
   }
 
   addRow() {
@@ -54,6 +69,9 @@ export default class extends Controller {
   }
 
   updateAccountName(event) {
+    if (this.isComposing && event?.type !== "compositionend") return
+    if (event?.isComposing) return
+
     const input = event.target
     const row = input.closest("[data-voucher-form-target='row']")
     if (!row) return
@@ -98,6 +116,9 @@ export default class extends Controller {
   }
 
   suggest(event) {
+    if (this.isComposing && event?.type !== "compositionend") return
+    if (event?.isComposing) return
+
     const input = event?.target
     if (!input) return
     const listId = input.getAttribute("list")
