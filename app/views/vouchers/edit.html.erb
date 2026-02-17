@@ -17,6 +17,7 @@
   <%= render "form",
     voucher: @voucher,
     accounts: @accounts,
+    input_accounts: @editable_accounts,
     submit_label: t("vouchers.edit.submit", default: "更新"),
     return_to: @return_to,
     return_account_code: @return_account_code,

@@ -11,6 +11,8 @@ class AccountRegisterEntryForm
   validates :account_code, :recorded_on, :counterpart_code, :amount, presence: true
   validate :account_exists
   validate :counterpart_exists
+  validate :account_unlocked
+  validate :counterpart_unlocked
   validate :amount_not_zero
 
   def save
@@ -49,6 +51,22 @@ class AccountRegisterEntryForm
   def counterpart_exists
     return if counterpart_code.blank?
     errors.add(:counterpart_code, "が科目表に存在しません") if Account.find_by(code: counterpart_code).nil?
+  end
+
+  def account_unlocked
+    return if account_code.blank?
+    account = Account.find_by(code: account_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:account_code, "はロックされているため使用できません")
+  end
+
+  def counterpart_unlocked
+    return if counterpart_code.blank?
+    account = Account.find_by(code: counterpart_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:counterpart_code, "はロックされているため使用できません")
   end
 
   def amount_not_zero

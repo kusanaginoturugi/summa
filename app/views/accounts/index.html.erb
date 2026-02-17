@@ -30,12 +30,13 @@
       <table class="table table-striped align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th style="width: 10%;"><%= t("accounts.index.th.code") %></th>
-            <th style="width: 24%;"><%= t("accounts.index.th.name") %></th>
-            <th style="width: 16%;" class="text-nowrap"><%= t("accounts.index.th.details") %></th>
-            <th style="width: 10%;"><%= t("accounts.index.th.category") %></th>
-            <th style="width: 10%;"><%= t("accounts.index.th.parent") %></th>
-            <th style="width: 30%;" class="text-end text-nowrap"><%= t("accounts.index.th.actions") %></th>
+            <th style="width: 9%;"><%= t("accounts.index.th.code") %></th>
+            <th style="width: 20%;"><%= t("accounts.index.th.name") %></th>
+            <th style="width: 13%;" class="text-nowrap"><%= t("accounts.index.th.details") %></th>
+            <th style="width: 9%;"><%= t("accounts.index.th.category") %></th>
+            <th style="width: 9%;"><%= t("accounts.index.th.parent") %></th>
+            <th style="width: 8%;" class="text-center"><%= t("accounts.index.th.lock") %></th>
+            <th style="width: 32%;" class="text-end text-nowrap"><%= t("accounts.index.th.actions") %></th>
           </tr>
         </thead>
         <tbody>
@@ -48,8 +49,9 @@
             <% children = groups[cat].group_by(&:parent_code) %>
             <% render_nodes = lambda do |parent_code, level|
                  (children[parent_code] || []).each do |acc|
+                 form_id = "account-row-form-#{acc.id}"
             %>
-              <%= form_with model: acc, url: account_path(acc), method: :patch, data: { turbo: false }, class: "m-0 p-0 row-form" do |f| %>
+              <%= form_with model: acc, url: account_path(acc), method: :patch, data: { turbo: false }, class: "m-0 p-0 row-form", id: form_id do |f| %>
                 <tr class="cat-<%= cat %>">
                   <td>
                     <%= f.text_field :code, class: "form-control form-control-sm", required: true %>
@@ -67,6 +69,10 @@
                     <%= f.select :parent_code,
                       options_for_select([[t("accounts.form.no_parent"), nil]] + @accounts.reject { |a| a.code == acc.code }.map { |a| ["#{a.code} #{a.name}", a.code] }, acc.parent_code),
                       {}, class: "form-select form-select-sm" %>
+                  </td>
+                  <td class="text-center">
+                    <%= hidden_field_tag "account[is_lock]", "0", form: form_id %>
+                    <%= check_box_tag "account[is_lock]", "1", acc.is_lock, class: "form-check-input mt-0", form: form_id %>
                   </td>
                   <td class="text-end text-nowrap">
                     <div class="d-flex justify-content-end gap-2 flex-nowrap">

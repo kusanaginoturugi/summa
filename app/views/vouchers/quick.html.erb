@@ -119,7 +119,7 @@
         </div>
 
         <datalist id="quick-account-codes">
-          <% @accounts.each do |account| %>
+          <% @editable_accounts.each do |account| %>
             <option value="<%= account.code %>"><%= "#{account.code} #{account.name}" %></option>
           <% end %>
         </datalist>
@@ -149,8 +149,8 @@
               <% @recent_vouchers.each do |voucher| %>
                 <% debit_lines = voucher.voucher_lines.select { |line| line.debit_amount.to_d.positive? } %>
                 <% credit_lines = voucher.voucher_lines.select { |line| line.credit_amount.to_d.positive? } %>
-                <% debit_names = debit_lines.map { |line| "#{line.account_code} #{(@accounts_map[line.account_code] || line.account.presence || '')}".strip }.uniq %>
-                <% credit_names = credit_lines.map { |line| "#{line.account_code} #{(@accounts_map[line.account_code] || line.account.presence || '')}".strip }.uniq %>
+                <% debit_names = debit_lines.map { |line| "#{line.account_code} #{(@all_accounts_map[line.account_code] || line.account.presence || '')}".strip }.uniq %>
+                <% credit_names = credit_lines.map { |line| "#{line.account_code} #{(@all_accounts_map[line.account_code] || line.account.presence || '')}".strip }.uniq %>
                 <% amount = debit_lines.sum { |line| line.debit_amount.to_d } %>
                 <tr>
                   <td><%= voucher.recorded_on&.strftime("%Y-%m-%d") %></td>

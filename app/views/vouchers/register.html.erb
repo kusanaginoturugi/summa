@@ -67,13 +67,13 @@
             <% if editing %>
               <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
               <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
-              <tr id="line-<%= row[:line].id %>" data-controller="register-focus">
+              <tr id="line-<%= row[:line].id %>" data-controller="register-focus" data-register-focus-focus-field-value="<%= params[:focus_edit] %>">
                 <td>
                   <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
                     class: "form-control form-control-sm", required: true, form: edit_form_id %>
                 </td>
                 <td>
-                  <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts_map.to_json %>">
+                  <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @editable_accounts_map.to_json %>">
                     <div class="counterpart-group">
                       <%= text_field_tag "register_update[counterpart_code]", @edit_form.counterpart_code || row[:counterpart_code],
                         class: "form-control form-control-sm text-end counterpart-code",
@@ -88,7 +88,8 @@
                 </td>
                 <td>
                   <%= text_field_tag "register_update[description]", @edit_form.description,
-                    class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: edit_form_id %>
+                    class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: edit_form_id,
+                    data: { register_focus_target: "description" } %>
                 </td>
                 <td>
                   <%= number_field_tag "register_update[amount]", @edit_form.amount,
@@ -114,6 +115,8 @@
                         account_code: @account_code,
                         description: @description_filter,
                         edit_line_id: row[:line].id,
+                        focus_edit: "counterpart",
+                        focus_entry: "",
                         anchor: "line-#{row[:line].id}"
                       ),
                       class: "link-primary text-decoration-none" %>
@@ -121,7 +124,18 @@
                     <%= counterpart_label.presence || "—" %>
                   <% end %>
                 </td>
-                <td><%= row[:voucher].description.presence || "—" %></td>
+                <td>
+                  <%= link_to(row[:voucher].description.presence || "—",
+                    register_vouchers_path(
+                      account_code: @account_code,
+                      description: @description_filter,
+                      edit_line_id: row[:line].id,
+                      focus_edit: "description",
+                      focus_entry: "",
+                      anchor: "line-#{row[:line].id}"
+                    ),
+                    class: "link-primary text-decoration-none") %>
+                </td>
                 <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
                 <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
                 <td class="text-end register-actions-col">
@@ -147,22 +161,27 @@
           <% end %>
         </tbody>
         <tfoot class="table-light">
-          <tr data-controller="register-entry" data-register-entry-current-balance-value="<%= @current_balance.to_f %>">
+          <tr id="register-entry"
+              data-controller="register-entry"
+              data-register-entry-current-balance-value="<%= @current_balance.to_f %>"
+              data-register-entry-focus-on-load-value="<%= @edit_line_id.present? ? nil : params[:focus_entry] %>">
             <td>
-              <%= date_field_tag "register_entry[recorded_on]", @entry_form.recorded_on || Date.current, class: "form-control form-control-sm", required: true, form: "register-add-form" %>
+              <%= date_field_tag "register_entry[recorded_on]", @entry_form.recorded_on || Date.current, class: "form-control form-control-sm", required: true, form: "register-add-form",
+                data: { register_entry_target: "recordedOn" } %>
             </td>
             <td>
-              <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @accounts_map.to_json %>">
+              <div data-controller="account-lookup" data-account-lookup-accounts-map-value="<%= @editable_accounts_map.to_json %>">
                 <div class="counterpart-group">
                   <%= text_field_tag "register_entry[counterpart_code]", @entry_form.counterpart_code, class: "form-control form-control-sm text-end counterpart-code", list: "register-account-codes", required: true, form: "register-add-form",
                     inputmode: "numeric",
-                    data: { account_lookup_target: "code", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
+                    data: { account_lookup_target: "code", register_entry_target: "counterpart", action: "input->account-lookup#update focus->account-lookup#suggest" } %>
                   <span class="counterpart-name text-truncate" data-account-lookup-target="name"><%= @accounts_map[@entry_form.counterpart_code] %></span>
                 </div>
               </div>
             </td>
             <td>
-              <%= text_field_tag "register_entry[description]", @entry_form.description, class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: "register-add-form" %>
+              <%= text_field_tag "register_entry[description]", @entry_form.description, class: "form-control form-control-sm", placeholder: t("vouchers.register.description_placeholder"), form: "register-add-form",
+                data: { register_entry_target: "description" } %>
             </td>
             <td>
               <%= number_field_tag "register_entry[amount]", @entry_form.amount, step: 1, class: "form-control form-control-sm text-end", required: true, form: "register-add-form",
@@ -181,7 +200,7 @@
     </div>
 
     <datalist id="register-account-codes">
-      <% @accounts.each do |account| %>
+      <% @editable_accounts.each do |account| %>
         <option value="<%= account.code %>"><%= "#{account.code} #{account.name}" %></option>
       <% end %>
     </datalist>

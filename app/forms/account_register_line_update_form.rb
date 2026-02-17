@@ -12,10 +12,13 @@ class AccountRegisterLineUpdateForm
   validates :line_id, :account_code, :recorded_on, :counterpart_code, :amount, presence: true
   validate :account_exists
   validate :counterpart_exists
+  validate :account_unlocked
+  validate :counterpart_unlocked
   validate :amount_not_zero
   validate :line_exists
   validate :line_belongs_to_selected_account
   validate :simple_voucher_only
+  validate :voucher_not_locked
 
   def save
     return false unless valid?
@@ -69,6 +72,22 @@ class AccountRegisterLineUpdateForm
     errors.add(:counterpart_code, "が科目表に存在しません") if Account.find_by(code: counterpart_code).nil?
   end
 
+  def account_unlocked
+    return if account_code.blank?
+    account = Account.find_by(code: account_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:account_code, "はロックされているため使用できません")
+  end
+
+  def counterpart_unlocked
+    return if counterpart_code.blank?
+    account = Account.find_by(code: counterpart_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:counterpart_code, "はロックされているため使用できません")
+  end
+
   def amount_not_zero
     errors.add(:amount, "は0以外の値を入力してください") if amount.to_d.zero?
   end
@@ -89,5 +108,12 @@ class AccountRegisterLineUpdateForm
     return if voucher.voucher_lines.size == 2 && counterpart_line.present?
 
     errors.add(:base, "複数明細の伝票は通常の伝票編集画面で修正してください")
+  end
+
+  def voucher_not_locked
+    return if voucher.nil?
+    return unless voucher.locked_for_edit?
+
+    errors.add(:base, "ロックされた科目を含む仕訳は変更できません")
   end
 end

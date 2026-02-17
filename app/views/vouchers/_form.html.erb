@@ -1,4 +1,5 @@
-<%= form_with model: voucher, url: voucher.persisted? ? voucher_path(voucher) : vouchers_path, method: voucher.persisted? ? :patch : :post, class: "voucher-form", data: { controller: "voucher-form", voucher_form_accounts_map_value: (@accounts || []).index_by(&:code).transform_values(&:name).to_json } do |f| %>
+<% input_accounts = local_assigns[:input_accounts] || accounts || [] %>
+<%= form_with model: voucher, url: voucher.persisted? ? voucher_path(voucher) : vouchers_path, method: voucher.persisted? ? :patch : :post, class: "voucher-form", data: { controller: "voucher-form", voucher_form_accounts_map_value: input_accounts.index_by(&:code).transform_values(&:name).to_json } do |f| %>
   <% return_to = local_assigns[:return_to] %>
   <% return_account_code = local_assigns[:return_account_code] %>
   <% return_description = local_assigns[:return_description] %>
@@ -81,7 +82,7 @@
     </template>
 
     <datalist id="account-codes">
-      <% (@accounts || []).each do |account| %>
+      <% input_accounts.each do |account| %>
         <option value="<%= account.code %>"><%= "#{account.code} #{account.name}" %></option>
       <% end %>
     </datalist>

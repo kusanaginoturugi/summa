@@ -21,6 +21,13 @@
       <%= form.select :parent_code,
           options_for_select([ [t("accounts.form.no_parent"), nil] ] + @accounts.map { |a| ["#{a.code} #{a.name}", a.code] }, form.object.parent_code) %>
     </div>
+    <div class="field">
+      <%= form.label :is_lock, t("accounts.form.is_lock") %>
+      <label style="display:flex; align-items:center; gap:8px;">
+        <%= form.check_box :is_lock %>
+        <span><%= t("accounts.form.is_lock_hint") %></span>
+      </label>
+    </div>
   </div>
 
   <datalist id="account-codes">

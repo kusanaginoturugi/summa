@@ -6,6 +6,17 @@
       <p class="text-uppercase text-muted mb-1 small">ACCOUNTS</p>
       <h1 class="h3 mb-1"><%= t("accounts.summary.heading") %></h1>
       <p class="text-muted mb-2"><%= t("accounts.summary.sub") %></p>
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small"><%= t("accounts.summary.filters.label") %></span>
+        <div class="btn-group btn-group-sm" role="group" aria-label="<%= t("accounts.summary.filters.label") %>">
+          <%= link_to t("accounts.summary.filters.all"), summary_accounts_path(lock_filter: "all"),
+            class: "btn #{@lock_filter == "all" ? "btn-primary" : "btn-outline-secondary"}" %>
+          <%= link_to t("accounts.summary.filters.locked"), summary_accounts_path(lock_filter: "locked"),
+            class: "btn #{@lock_filter == "locked" ? "btn-primary" : "btn-outline-secondary"}" %>
+          <%= link_to t("accounts.summary.filters.unlocked"), summary_accounts_path(lock_filter: "unlocked"),
+            class: "btn #{@lock_filter == "unlocked" ? "btn-primary" : "btn-outline-secondary"}" %>
+        </div>
+      </div>
     </div>
     <div class="d-flex gap-2">
       <%= link_to t("accounts.summary.back"), accounts_path, class: "btn btn-outline-secondary" %>
@@ -22,6 +33,7 @@
           <thead class="table-light">
             <tr>
               <th><%= t("accounts.summary.th.account") %></th>
+              <th class="text-center"><%= t("accounts.summary.th.lock") %></th>
               <th class="text-end"><%= t("accounts.summary.th.total_amount") %></th>
               <th class="text-end"><%= t("accounts.summary.th.count") %></th>
             </tr>
@@ -32,13 +44,20 @@
               <% next if rows.blank? %>
 
               <tr class="table-secondary">
-                <td colspan="3" class="fw-bold"><%= t("accounts.categories.#{category}") %></td>
+                <td colspan="4" class="fw-bold"><%= t("accounts.categories.#{category}") %></td>
               </tr>
 
               <% rows.each do |row| %>
                 <tr class="cat-<%= category %>">
                   <td>
                     <%= link_to "#{row.code} #{row.name}", register_vouchers_path(account_code: row.code), class: "link-primary text-decoration-none" %>
+                  </td>
+                  <td class="text-center">
+                    <% if row.is_lock %>
+                      <span class="badge text-bg-danger"><%= t("accounts.summary.locked_badge") %></span>
+                    <% else %>
+                      <span class="text-muted">-</span>
+                    <% end %>
                   </td>
                   <td class="text-end"><%= number_with_delimiter(row.total_amount.to_d.to_i) %></td>
                   <td class="text-end"><%= number_with_delimiter(row.entry_count.to_i) %></td>

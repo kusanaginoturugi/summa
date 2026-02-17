@@ -19,6 +19,8 @@ class QuickVoucherForm
   validate :amount_positive
   validate :account_exists
   validate :counter_account_exists
+  validate :account_unlocked
+  validate :counter_account_unlocked
 
   def save
     apply_direction_values
@@ -71,5 +73,21 @@ class QuickVoucherForm
   def counter_account_exists
     return if counter_account_code.blank?
     errors.add(:counter_account_code, "が科目表に存在しません") if Account.find_by(code: counter_account_code).nil?
+  end
+
+  def account_unlocked
+    return if account_code.blank?
+    account = Account.find_by(code: account_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:account_code, "はロックされているため使用できません")
+  end
+
+  def counter_account_unlocked
+    return if counter_account_code.blank?
+    account = Account.find_by(code: counter_account_code)
+    return if account.nil? || !account.is_lock?
+
+    errors.add(:counter_account_code, "はロックされているため使用できません")
   end
 end

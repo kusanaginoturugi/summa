@@ -84,7 +84,7 @@
     </div>
 
     <datalist id="account-codes">
-      <% @accounts.each do |account| %>
+      <% @input_accounts.each do |account| %>
         <option value="<%= account.code %>"><%= "#{account.code} #{account.name}" %></option>
       <% end %>
     </datalist>

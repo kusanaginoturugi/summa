@@ -53,7 +53,7 @@
               <td style="white-space: nowrap;" data-counter-category="<%= counter_category %>">
                 <%= form_with url: update_counterpart_voucher_line_path(line), method: :patch,
                   class: "w-100",
-                  data: { turbo: false, controller: "account-lookup", account_lookup_accounts_map_value: @accounts_map.to_json } do %>
+                  data: { turbo: false, controller: "account-lookup", account_lookup_accounts_map_value: @editable_accounts_map.to_json } do %>
                   <div class="counterpart-group">
                     <input type="text" name="counter_account_code" value="<%= default_counter %>"
                            class="form-control form-control-sm text-end counterpart-code"
@@ -75,7 +75,7 @@
         </tbody>
       </table>
       <datalist id="account-codes-entries">
-        <% @accounts_map.each do |code, name| %>
+        <% @editable_accounts_map.each do |code, name| %>
           <option value="<%= code %>"><%= "#{code} #{name}" %></option>
         <% end %>
       </datalist>

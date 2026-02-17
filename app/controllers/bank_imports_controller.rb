@@ -1,6 +1,7 @@
 class BankImportsController < ApplicationController
   def new
     @accounts = Account.order(:code)
+    @input_accounts = @accounts.reject(&:is_lock)
     @settings = BankImportSetting.order(:name)
     @form = BankCsvImportForm.new(default_params)
 
@@ -18,6 +19,7 @@ class BankImportsController < ApplicationController
 
   def create
     @accounts = Account.order(:code)
+    @input_accounts = @accounts.reject(&:is_lock)
     @settings = BankImportSetting.order(:name)
     permitted = import_params
     remember_selected_setting(permitted[:setting_id])

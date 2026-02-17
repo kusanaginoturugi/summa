@@ -19,7 +19,7 @@
     <div class="flash flash--alert"><%= flash[:alert] %></div>
   <% end %>
 
-  <%= render "form", voucher: @voucher, accounts: @accounts, submit_label: t("vouchers.new.submit") %>
+  <%= render "form", voucher: @voucher, accounts: @accounts, input_accounts: @editable_accounts, submit_label: t("vouchers.new.submit") %>
 
   <section class="card card--stacked" style="margin-top: 16px;">
     <div class="card__header">

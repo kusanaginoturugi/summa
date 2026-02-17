@@ -4,6 +4,7 @@ class Account < ApplicationRecord
   has_many :voucher_lines, primary_key: :code, foreign_key: :account_code
 
   CATEGORIES = %w[asset liability equity revenue expense].freeze
+  scope :unlocked, -> { where(is_lock: false) }
 
   validates :code, presence: true, uniqueness: true
   validates :name, presence: true

@@ -10,15 +10,25 @@ class AccountsController < ApplicationController
   end
 
   def summary
-    @summaries = Account.left_joins(:voucher_lines)
-                        .select(
-                          "accounts.code, accounts.name, accounts.category, " \
-                          "COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0) AS total_amount, " \
-                          "COUNT(voucher_lines.id) AS entry_count"
-                        )
-                        .group("accounts.code, accounts.name, accounts.category")
-                        .having("ABS(COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0)) > 0")
-                        .order(:code)
+    @lock_filter = normalize_lock_filter(params[:lock_filter])
+    scope = Account.left_joins(:voucher_lines)
+                   .select(
+                     "accounts.code, accounts.name, accounts.category, accounts.is_lock, " \
+                     "COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0) AS total_amount, " \
+                     "COUNT(voucher_lines.id) AS entry_count"
+                   )
+                   .group("accounts.code, accounts.name, accounts.category, accounts.is_lock")
+                   .having("COUNT(voucher_lines.id) > 0")
+                   .order(:code)
+
+    case @lock_filter
+    when "locked"
+      scope = scope.where(accounts: { is_lock: true })
+    when "unlocked"
+      scope = scope.where(accounts: { is_lock: false })
+    end
+
+    @summaries = scope
   end
 
   def create
@@ -63,6 +73,7 @@ class AccountsController < ApplicationController
                         .where(account_code: codes)
                         .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
     @accounts_map = Account.pluck(:code, :name).to_h
+    @editable_accounts_map = Account.unlocked.order(:code).pluck(:code, :name).to_h
     @account_categories = Account.pluck(:code, :category).to_h
   end
 
@@ -89,6 +100,12 @@ class AccountsController < ApplicationController
   end
 
   def account_params
-    params.require(:account).permit(:code, :name, :details, :category, :parent_code)
+    params.require(:account).permit(:code, :name, :details, :category, :parent_code, :is_lock)
+  end
+
+  def normalize_lock_filter(value)
+    return value if %w[all locked unlocked].include?(value)
+
+    "all"
   end
 end

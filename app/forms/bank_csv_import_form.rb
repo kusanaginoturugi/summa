@@ -71,7 +71,14 @@ class BankCsvImportForm
   def accounts_exist
     %i[bank_account_code deposit_counter_code withdrawal_counter_code].each do |key|
       code = public_send(key)
-      errors.add(key, I18n.t("bank_imports.errors.account_missing", code: code)) if code.present? && Account.find_by(code: code).nil?
+      next if code.blank?
+
+      account = Account.find_by(code: code)
+      if account.nil?
+        errors.add(key, I18n.t("bank_imports.errors.account_missing", code: code))
+      elsif account.is_lock?
+        errors.add(key, "はロックされているため使用できません")
+      end
     end
   end
 

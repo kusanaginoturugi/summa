@@ -1,16 +1,27 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input"]
+  static targets = ["input", "description"]
+  static values = { focusField: String }
 
   connect() {
-    if (!this.hasInputTarget) return
+    const focusTarget = this.resolveFocusTarget()
+    if (!focusTarget) return
 
     requestAnimationFrame(() => {
       this.adjustScrollForStickyHeader()
-      this.inputTarget.focus()
-      this.inputTarget.select()
+      focusTarget.focus()
+      focusTarget.select?.()
     })
+  }
+
+  resolveFocusTarget() {
+    if (this.focusFieldValue === "description" && this.hasDescriptionTarget) {
+      return this.descriptionTarget
+    }
+    if (this.hasInputTarget) return this.inputTarget
+    if (this.hasDescriptionTarget) return this.descriptionTarget
+    return null
   }
 
   adjustScrollForStickyHeader() {

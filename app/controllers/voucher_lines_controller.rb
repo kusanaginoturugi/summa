@@ -7,6 +7,12 @@ class VoucherLinesController < ApplicationController
     unless account
       redirect_back fallback_location: accounts_path, alert: "科目コード #{new_code} が存在しません" and return
     end
+    if account.is_lock?
+      redirect_back fallback_location: accounts_path, alert: "ロックされている科目は使用できません" and return
+    end
+    if @line.voucher.locked_for_edit?
+      redirect_back fallback_location: accounts_path, alert: "ロックされた科目を含む仕訳は変更できません" and return
+    end
 
     other_lines = @line.voucher.voucher_lines.where.not(id: @line.id)
     if other_lines.blank?
@@ -14,10 +20,12 @@ class VoucherLinesController < ApplicationController
     end
 
     VoucherLine.transaction do
-      other_lines.update_all(account_code: new_code)
+      other_lines.each { |line| line.update!(account_code: new_code) }
     end
 
     redirect_back fallback_location: accounts_path, notice: "資金移動先を更新しました"
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_back fallback_location: accounts_path, alert: e.record.errors.full_messages.join(" / ")
   end
 
   private

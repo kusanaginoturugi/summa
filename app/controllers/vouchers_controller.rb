@@ -61,8 +61,11 @@ class VouchersController < ApplicationController
   end
 
   def destroy
-    @voucher.destroy!
-    redirect_to vouchers_path, notice: t("vouchers.flash.deleted", default: "振替伝票を削除しました")
+    if @voucher.destroy
+      redirect_to vouchers_path, notice: t("vouchers.flash.deleted", default: "振替伝票を削除しました")
+    else
+      redirect_to edit_voucher_path(@voucher), alert: @voucher.errors.full_messages.join(" / ")
+    end
   end
 
   def quick
@@ -92,7 +95,12 @@ class VouchersController < ApplicationController
     if @entry_form.save
       session[:register_account_code] = @entry_form.account_code
       remember_register_recorded_on(@entry_form.recorded_on)
-      redirect_to register_vouchers_path(account_code: @entry_form.account_code, description: @description_filter), notice: t("vouchers.flash.saved")
+      redirect_to register_vouchers_path(
+        account_code: @entry_form.account_code,
+        description: @description_filter,
+        anchor: "register-entry",
+        focus_entry: "counterpart"
+      ), notice: t("vouchers.flash.saved")
     else
       @account_code = @entry_form.account_code.presence || resolve_register_account
       prepare_register_view
@@ -146,6 +154,7 @@ class VouchersController < ApplicationController
 
   def load_accounts
     @accounts = Account.order(:code)
+    @editable_accounts = @accounts.reject(&:is_lock)
   end
 
   def quick_params
@@ -165,7 +174,8 @@ class VouchersController < ApplicationController
   end
 
   def prepare_quick_view
-    @accounts_map = @accounts.index_by(&:code).transform_values(&:name)
+    @all_accounts_map = @accounts.index_by(&:code).transform_values(&:name)
+    @accounts_map = @editable_accounts.index_by(&:code).transform_values(&:name)
     @recent_vouchers = Voucher.includes(:voucher_lines).order(created_at: :desc).limit(20)
   end
 
@@ -174,6 +184,7 @@ class VouchersController < ApplicationController
     @account_code = @account&.code
     session[:register_account_code] = @account_code if @account_code.present?
     @accounts_map = @accounts.index_by(&:code).transform_values(&:name)
+    @editable_accounts_map = @editable_accounts.index_by(&:code).transform_values(&:name)
 
     @register_rows = []
     @current_balance = 0.to_d
