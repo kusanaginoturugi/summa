@@ -259,6 +259,10 @@ ja:
       back: "勘定科目一覧に戻る"
       empty: "仕訳件数が1件以上の科目はありません。"
       locked_badge: "🔒"
+      empty_column: "該当科目はありません。"
+      columns:
+        left: "資産〜収益"
+        right: "費用"
       filters:
         label: "表示"
         all: "すべて"

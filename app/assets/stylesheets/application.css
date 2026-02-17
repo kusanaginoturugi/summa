@@ -559,6 +559,20 @@ input:focus {
   width: 132px;
 }
 
+.accounts-summary-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.accounts-summary-column {
+  min-width: 0;
+}
+
+.accounts-summary-table-wrap {
+  overflow-x: auto;
+}
+
 .register-table .register-col-counterpart {
   width: 200px;
 }
