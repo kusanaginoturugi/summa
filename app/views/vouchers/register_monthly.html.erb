@@ -1,0 +1,57 @@
+<% content_for :title, t("vouchers.register_monthly.title") %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">REGISTER MONTHLY</p>
+    <h1><%= t("vouchers.register_monthly.heading") %></h1>
+    <p class="sub"><%= t("vouchers.register_monthly.sub") %></p>
+  </div>
+
+  <section class="card card--stacked voucher-filter-wrap">
+    <%= form_with url: register_monthly_vouchers_path, method: :get, local: true, class: "voucher-filter-row" do |f| %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register_monthly.account_label") %></span>
+      <%= f.select :account_code,
+        options_for_select(@accounts.map { |account| ["#{account.code} #{account.name}", account.code] }, @account_code),
+        {},
+        class: "form-select form-select-sm voucher-filter-control",
+        onchange: "this.form.submit()" %>
+      <noscript>
+        <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.index.filter_submit") %></button>
+      </noscript>
+    <% end %>
+  </section>
+
+  <section class="card card--stacked">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="pill"><%= [@account&.code, @account&.name].compact.join(" ") %></span>
+      <span class="pill"><%= t("vouchers.register_monthly.month_count", count: @monthly_rows.size) %></span>
+      <span class="pill"><%= t("vouchers.register_monthly.entry_count", count: @monthly_entry_count) %></span>
+      <span class="pill"><%= t("vouchers.register_monthly.total", amount: number_with_delimiter(@monthly_total.to_i)) %></span>
+    </div>
+
+    <% if @monthly_rows.blank? %>
+      <div class="text-muted"><%= t("vouchers.register_monthly.empty") %></div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th><%= t("vouchers.register_monthly.th.month") %></th>
+              <th class="text-end"><%= t("vouchers.register_monthly.th.total") %></th>
+              <th class="text-end"><%= t("vouchers.register_monthly.th.count") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @monthly_rows.each do |row| %>
+              <tr>
+                <td><%= row[:month].strftime("%Y-%m") %></td>
+                <td class="text-end"><%= number_with_delimiter(row[:total].to_i) %></td>
+                <td class="text-end"><%= number_with_delimiter(row[:count]) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>

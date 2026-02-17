@@ -10,6 +10,7 @@ ja:
       new: "伝票入力"
       quick: "簡易振替伝票入力"
       register: "科目別入力"
+      register_monthly: "科目別月次集計"
       menu: "伝票入力"
     bank_imports: "CSV取込"
     accounts: "勘定科目"
@@ -135,6 +136,19 @@ ja:
         counterpart: "資金移動（科目）"
         amount: "費用"
         balance: "貸借残高"
+    register_monthly:
+      title: "科目別月次集計 | Summa"
+      heading: "科目別月次集計"
+      sub: "科目別入力の仕訳を、月ごとの合計で確認できます。"
+      account_label: "科目"
+      month_count: "%{count}か月"
+      entry_count: "%{count}件"
+      total: "合計 %{amount}"
+      empty: "この科目の仕訳はまだありません。"
+      th:
+        month: "月"
+        total: "月合計"
+        count: "件数"
 
   activemodel:
     attributes:

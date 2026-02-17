@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   post "vouchers/quick" => "vouchers#create_quick"
   get "vouchers/register" => "vouchers#register", as: :register_vouchers
   post "vouchers/register" => "vouchers#create_register"
+  get "vouchers/register_monthly" => "vouchers#register_monthly", as: :register_monthly_vouchers
   patch "vouchers/register/lines/:id" => "vouchers#update_register_line", as: :update_register_voucher_line
   resources :bank_imports, only: %i[new create]
   resources :accounts, only: %i[index new create edit update destroy] do

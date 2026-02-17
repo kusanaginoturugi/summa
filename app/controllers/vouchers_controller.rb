@@ -87,6 +87,39 @@ class VouchersController < ApplicationController
     )
   end
 
+  def register_monthly
+    load_accounts
+    @account_code = resolve_register_monthly_account
+    @account = @accounts.find { |account| account.code == @account_code } || @accounts.first
+    @account_code = @account&.code
+    session[:register_monthly_account_code] = @account_code if @account_code.present?
+
+    @monthly_rows = []
+    @monthly_total = 0.to_d
+    @monthly_entry_count = 0
+    return if @account.blank?
+
+    grouped = Hash.new { |hash, key| hash[key] = { total: 0.to_d, count: 0 } }
+    lines = VoucherLine.includes(:voucher)
+                       .joins(:voucher)
+                       .where(account_code: @account.code)
+                       .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
+    lines.each do |line|
+      recorded_on = line.voucher&.recorded_on
+      next if recorded_on.blank?
+
+      month = recorded_on.to_date.beginning_of_month
+      grouped[month][:total] += line.credit_amount.to_d - line.debit_amount.to_d
+      grouped[month][:count] += 1
+    end
+
+    @monthly_rows = grouped.sort_by { |month, _| month }.map do |month, values|
+      { month: month, total: values[:total], count: values[:count] }
+    end
+    @monthly_total = @monthly_rows.sum { |row| row[:total] }
+    @monthly_entry_count = @monthly_rows.sum { |row| row[:count] }
+  end
+
   def create_register
     load_accounts
     @description_filter = resolve_register_description_filter
@@ -276,6 +309,15 @@ class VouchersController < ApplicationController
     end
 
     session[:register_description].presence
+  end
+
+  def resolve_register_monthly_account
+    if params.key?(:account_code)
+      session[:register_monthly_account_code] = params[:account_code].presence
+      return params[:account_code].presence
+    end
+
+    session[:register_monthly_account_code].presence
   end
 
   def resolve_register_recorded_on
