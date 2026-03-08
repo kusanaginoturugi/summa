@@ -3,8 +3,12 @@ ja:
     application:
       app_name: "Summa"
   nav:
+    fiscal_year:
+      label: "会計年度"
+      suffix: "年度"
     options:
       menu: "オプション"
+      rollover: "年度繰越"
     vouchers:
       index: "伝票一覧"
       new: "伝票入力"
@@ -149,6 +153,34 @@ ja:
         month: "月"
         total: "月合計"
         count: "件数"
+  fiscal_year_rollovers:
+    new:
+      title: "年度繰越 | Summa"
+      heading: "年度繰越"
+      sub: "前年度の期末残高から、翌年度の開始残高伝票を作成します。"
+      from_year: "開始年度（前年度）"
+      to_year: "終了年度（新年度）"
+      balancing_account_code: "差額調整科目（必要時）"
+      preview: "プレビュー"
+      execute: "年度繰越を実行"
+      preview_period: "%{from}年度末 → %{to}年度期首"
+      preview_rows: "%{count}科目"
+      preview_debit: "借方合計 %{amount}"
+      preview_credit: "貸方合計 %{amount}"
+      preview_diff: "差額 %{amount}"
+      difference_note: "差額があります。差額調整科目を指定して実行してください。"
+      debit: "借方"
+      credit: "貸方"
+      th:
+        account: "勘定科目"
+        category: "区分"
+        balance: "期末残高（借方-貸方）"
+        direction: "期首方向"
+        amount: "期首金額"
+  app_settings:
+    fiscal_year:
+      updated: "会計年度を%{year}年度に変更しました"
+      invalid: "会計年度の指定が不正です"
 
   activemodel:
     attributes:

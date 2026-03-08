@@ -1,5 +1,11 @@
 class Voucher < ApplicationRecord
   has_many :voucher_lines, dependent: :destroy
+  scope :in_fiscal_year, ->(year) do
+    y = year.to_i
+    next all unless y.positive?
+
+    where(recorded_on: Date.new(y, 1, 1)..Date.new(y, 12, 31))
+  end
 
   accepts_nested_attributes_for :voucher_lines, allow_destroy: true, reject_if: :blank_line?
 

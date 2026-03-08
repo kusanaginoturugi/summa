@@ -1,0 +1,83 @@
+<% content_for :title, t("fiscal_year_rollovers.new.title") %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">FISCAL YEAR ROLLOVER</p>
+    <h1><%= t("fiscal_year_rollovers.new.heading") %></h1>
+    <p class="sub"><%= t("fiscal_year_rollovers.new.sub") %></p>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="flash flash--notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <section class="card card--stacked">
+    <%= form_with scope: :fiscal_year_rollover, url: fiscal_year_rollover_path, method: :post, local: true do |f| %>
+      <div class="field-grid">
+        <div class="field">
+          <%= f.label :from_year, t("fiscal_year_rollovers.new.from_year") %>
+          <%= f.number_field :from_year, value: @from_year, min: 2000, max: 2100, required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :to_year, t("fiscal_year_rollovers.new.to_year") %>
+          <%= f.number_field :to_year, value: @to_year, min: 2001, max: 2101, required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :balancing_account_code, t("fiscal_year_rollovers.new.balancing_account_code") %>
+          <%= f.select :balancing_account_code,
+            options_for_select([["", ""]] + @accounts.map { |account| ["#{account.code} #{account.name}", account.code] }, @balancing_account_code),
+            {},
+            class: "form-select" %>
+        </div>
+      </div>
+
+      <div class="card__actions mt-2">
+        <button type="submit" name="preview" value="1" class="btn btn--ghost"><%= t("fiscal_year_rollovers.new.preview") %></button>
+        <button type="submit" name="execute" value="1" class="btn btn--primary"><%= t("fiscal_year_rollovers.new.execute") %></button>
+      </div>
+    <% end %>
+  </section>
+
+  <% if @preview.present? %>
+    <section class="card card--stacked mt-3">
+      <div class="d-flex gap-2 flex-wrap">
+        <span class="pill"><%= t("fiscal_year_rollovers.new.preview_period", from: @preview.from_year, to: @preview.to_year) %></span>
+        <span class="pill"><%= t("fiscal_year_rollovers.new.preview_rows", count: @preview.rows.size) %></span>
+        <span class="pill"><%= t("fiscal_year_rollovers.new.preview_debit", amount: number_with_delimiter(@preview.debit_total.to_i)) %></span>
+        <span class="pill"><%= t("fiscal_year_rollovers.new.preview_credit", amount: number_with_delimiter(@preview.credit_total.to_i)) %></span>
+        <span class="pill"><%= t("fiscal_year_rollovers.new.preview_diff", amount: number_with_delimiter(@preview.difference.to_i)) %></span>
+      </div>
+      <% if @preview.difference.nonzero? %>
+        <div class="flash flash--alert mb-0"><%= t("fiscal_year_rollovers.new.difference_note") %></div>
+      <% end %>
+
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th><%= t("fiscal_year_rollovers.new.th.account") %></th>
+              <th><%= t("fiscal_year_rollovers.new.th.category") %></th>
+              <th class="text-end"><%= t("fiscal_year_rollovers.new.th.balance") %></th>
+              <th class="text-end"><%= t("fiscal_year_rollovers.new.th.direction") %></th>
+              <th class="text-end"><%= t("fiscal_year_rollovers.new.th.amount") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @preview.rows.each do |row| %>
+              <tr class="cat-<%= row.category %>">
+                <td><%= "#{row.account_code} #{row.account_name}" %></td>
+                <td><%= t("accounts.categories.#{row.category}") %></td>
+                <td class="text-end"><%= number_with_delimiter(row.balance.to_i) %></td>
+                <td class="text-end"><%= row.balance.positive? ? t("fiscal_year_rollovers.new.debit") : t("fiscal_year_rollovers.new.credit") %></td>
+                <td class="text-end"><%= number_with_delimiter(row.balance.abs.to_i) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -7,7 +7,7 @@ class VouchersController < ApplicationController
     @account_code = resolve_account_filter
     @description_filter = resolve_description_filter
     @account_codes = expand_account_codes(@account_code)
-    scope = Voucher.includes(:voucher_lines).order(recorded_on: :asc, created_at: :asc)
+    scope = Voucher.in_fiscal_year(current_fiscal_year).includes(:voucher_lines).order(recorded_on: :asc, created_at: :asc)
     if @account_codes.present?
       scope = scope.joins(:voucher_lines).where(voucher_lines: { account_code: @account_codes }).distinct
     end
@@ -24,7 +24,7 @@ class VouchersController < ApplicationController
   end
 
   def new
-    @voucher = Voucher.new(recorded_on: Date.current)
+    @voucher = Voucher.new(recorded_on: default_recorded_on)
     2.times { @voucher.voucher_lines.build }
     load_accounts
   end
@@ -72,7 +72,7 @@ class VouchersController < ApplicationController
     load_accounts
     prepare_quick_view
     defaults = quick_defaults
-    @form = QuickVoucherForm.new(defaults.merge(recorded_on: defaults[:recorded_on] || Date.current))
+    @form = QuickVoucherForm.new(defaults.merge(recorded_on: defaults[:recorded_on] || default_recorded_on))
   end
 
   def register
@@ -103,6 +103,7 @@ class VouchersController < ApplicationController
     lines = VoucherLine.includes(:voucher)
                        .joins(:voucher)
                        .where(account_code: @account.code)
+                       .where(vouchers: { recorded_on: current_fiscal_year_range })
                        .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
     lines.each do |line|
       recorded_on = line.voucher&.recorded_on
@@ -209,7 +210,7 @@ class VouchersController < ApplicationController
   def prepare_quick_view
     @all_accounts_map = @accounts.index_by(&:code).transform_values(&:name)
     @accounts_map = @editable_accounts.index_by(&:code).transform_values(&:name)
-    @recent_vouchers = Voucher.includes(:voucher_lines).order(created_at: :desc).limit(20)
+    @recent_vouchers = Voucher.in_fiscal_year(current_fiscal_year).includes(:voucher_lines).order(created_at: :desc).limit(20)
   end
 
   def prepare_register_view
@@ -226,6 +227,7 @@ class VouchersController < ApplicationController
     lines = VoucherLine.includes(voucher: :voucher_lines)
                        .joins(:voucher)
                        .where(account_code: @account.code)
+                       .where(vouchers: { recorded_on: current_fiscal_year_range })
     if @description_filter.present?
       lines = lines.where("vouchers.description LIKE ?", "%#{@description_filter}%")
     end
@@ -322,11 +324,12 @@ class VouchersController < ApplicationController
 
   def resolve_register_recorded_on
     raw = session[:register_recorded_on].presence
-    return Date.current if raw.blank?
+    return default_recorded_on if raw.blank?
 
-    Date.parse(raw)
+    date = Date.parse(raw)
+    current_fiscal_year_range.cover?(date) ? date : default_recorded_on
   rescue ArgumentError
-    Date.current
+    default_recorded_on
   end
 
   def remember_register_recorded_on(value)
@@ -375,5 +378,12 @@ class VouchersController < ApplicationController
 
   def quick_defaults
     (session[:quick_voucher_last] || {}).symbolize_keys
+  end
+
+  def default_recorded_on
+    today = Date.current
+    return today if current_fiscal_year_range.cover?(today)
+
+    current_fiscal_year_range.begin
   end
 end

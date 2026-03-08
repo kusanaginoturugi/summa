@@ -11,14 +11,27 @@ class AccountsController < ApplicationController
 
   def summary
     @lock_filter = normalize_lock_filter(params[:lock_filter])
-    scope = Account.left_joins(:voucher_lines)
+    from = ActiveRecord::Base.connection.quote(current_fiscal_year_range.begin)
+    to = ActiveRecord::Base.connection.quote(current_fiscal_year_range.end)
+    join_sql = <<~SQL.squish
+      LEFT JOIN (
+        SELECT voucher_lines.account_code AS account_code,
+               SUM(voucher_lines.debit_amount - voucher_lines.credit_amount) AS total_amount,
+               COUNT(*) AS entry_count
+        FROM voucher_lines
+        INNER JOIN vouchers ON vouchers.id = voucher_lines.voucher_id
+        WHERE vouchers.recorded_on BETWEEN #{from} AND #{to}
+        GROUP BY voucher_lines.account_code
+      ) fiscal_totals ON fiscal_totals.account_code = accounts.code
+    SQL
+
+    scope = Account.joins(join_sql)
                    .select(
                      "accounts.code, accounts.name, accounts.category, accounts.is_lock, " \
-                     "COALESCE(SUM(voucher_lines.debit_amount - voucher_lines.credit_amount), 0) AS total_amount, " \
-                     "COUNT(voucher_lines.id) AS entry_count"
+                     "COALESCE(fiscal_totals.total_amount, 0) AS total_amount, " \
+                     "COALESCE(fiscal_totals.entry_count, 0) AS entry_count"
                    )
-                   .group("accounts.code, accounts.name, accounts.category, accounts.is_lock")
-                   .having("COUNT(voucher_lines.id) > 0")
+                   .where("COALESCE(fiscal_totals.entry_count, 0) > 0")
                    .order(:code)
 
     case @lock_filter
@@ -70,7 +83,9 @@ class AccountsController < ApplicationController
     codes = [@account.code] + descendant_codes(@account)
     @included_codes = codes
     @lines = VoucherLine.includes(:voucher, :account_master)
+                        .joins(:voucher)
                         .where(account_code: codes)
+                        .where(vouchers: { recorded_on: current_fiscal_year_range })
                         .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
     @accounts_map = Account.pluck(:code, :name).to_h
     @editable_accounts_map = Account.unlocked.order(:code).pluck(:code, :name).to_h

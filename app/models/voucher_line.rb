@@ -1,4 +1,12 @@
 class VoucherLine < ApplicationRecord
+  attr_accessor :allow_locked_account
+  scope :in_fiscal_year, ->(year) do
+    y = year.to_i
+    next all unless y.positive?
+
+    joins(:voucher).where(vouchers: { recorded_on: Date.new(y, 1, 1)..Date.new(y, 12, 31) })
+  end
+
   belongs_to :voucher
   belongs_to :account_master, class_name: "Account", primary_key: :code, foreign_key: :account_code, optional: true
 
@@ -32,6 +40,7 @@ class VoucherLine < ApplicationRecord
 
   def account_not_locked
     return if account_master.nil?
+    return if allow_locked_account
     return unless account_master.is_lock?
 
     errors.add(:account_code, "はロックされているため使用できません")

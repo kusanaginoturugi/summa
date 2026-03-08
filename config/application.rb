@@ -27,7 +27,9 @@ module Summa
     config.i18n.available_locales = %i[ja en]
     config.i18n.default_locale = :ja
 
-    # app/forms をオートロード対象にする
+    # app/forms, app/services をオートロード対象にする
     config.autoload_paths << Rails.root.join("app/forms")
+    config.autoload_paths << Rails.root.join("app/services")
+    config.eager_load_paths << Rails.root.join("app/services")
   end
 end

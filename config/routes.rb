@@ -16,6 +16,10 @@ Rails.application.routes.draw do
   post "vouchers/register" => "vouchers#create_register"
   get "vouchers/register_monthly" => "vouchers#register_monthly", as: :register_monthly_vouchers
   patch "vouchers/register/lines/:id" => "vouchers#update_register_line", as: :update_register_voucher_line
+  resource :fiscal_year_rollover, only: %i[new create]
+  resource :app_settings, only: [] do
+    patch :fiscal_year, on: :collection
+  end
   resources :bank_imports, only: %i[new create]
   resources :accounts, only: %i[index new create edit update destroy] do
     get :summary, on: :collection

@@ -82,6 +82,23 @@
       }
       .dropdown-menu .dropdown-item:hover { background: #e9ecef; }
       .dropdown.open > .dropdown-menu { display: block; }
+      .fiscal-year-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        margin-left: 8px;
+      }
+      .fiscal-year-label {
+        color: #6c757d;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .fiscal-year-form select {
+        width: auto;
+        min-width: 118px;
+      }
     </style>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -137,6 +154,8 @@
                 <%= t("nav.options.menu") %>
               </a>
               <ul class="dropdown-menu">
+                <li><%= link_to t("nav.options.rollover"), new_fiscal_year_rollover_path, class: "dropdown-item" %></li>
+                <li><hr class="dropdown-divider"></li>
                 <li>
                   <button type="button" class="dropdown-item" data-action="click->theme-toggle#toggle" data-theme-toggle-target="button">
                     <%= t("nav.theme.to_dark") %>
@@ -145,6 +164,14 @@
               </ul>
             </li>
           </ul>
+          <%= form_with url: fiscal_year_app_settings_path, method: :patch, local: true, class: "fiscal-year-form" do %>
+            <%= hidden_field_tag :return_to, request.fullpath %>
+            <span class="fiscal-year-label"><%= t("nav.fiscal_year.label") %></span>
+            <%= select_tag :fiscal_year,
+              options_for_select(fiscal_year_options.map { |year| ["#{year}#{t("nav.fiscal_year.suffix")}", year] }, current_fiscal_year),
+              class: "form-select form-select-sm",
+              onchange: "this.form.submit()" %>
+          <% end %>
         </div>
       </div>
     </nav>
