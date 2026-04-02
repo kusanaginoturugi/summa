@@ -226,6 +226,7 @@ ja:
       account_missing: "科目コード%{code}が科目表に存在しません"
       invalid_date: "日付の解釈に失敗しました（値: %{value}）"
       no_rows: "取り込める行がありませんでした"
+      preview_expired: "プレビューの有効期限が切れました。CSVを再度読み込んでください"
     new:
       title: "CSV取込 | Summa"
       heading: "CSV取込"

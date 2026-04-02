@@ -27,6 +27,7 @@ class BankImportsController < ApplicationController
 
     if params[:preview].present?
       if @form.parse_only
+        @preview_token = store_preview_rows(@form.rows_json)
         render :preview, status: :ok
       else
         flash.now[:alert] = @form.errors.full_messages.join(" / ")
@@ -34,6 +35,14 @@ class BankImportsController < ApplicationController
       end
       return
     end
+
+    rows_json = load_preview_rows(params[:bank_import_preview_token])
+    if rows_json.blank?
+      flash.now[:alert] = t("bank_imports.errors.preview_expired")
+      render :new, status: :unprocessable_entity
+      return
+    end
+    @form = BankCsvImportForm.new(permitted.except(:rows).merge(rows: rows_json))
 
     if @form.save
       notice = t("bank_imports.flash.imported", count: @form.created_count)
@@ -51,8 +60,24 @@ class BankImportsController < ApplicationController
     params.require(:bank_csv_import_form).permit(
       :file, :bank_account_code, :deposit_counter_code, :withdrawal_counter_code,
       :date_column, :description_column, :deposit_column, :withdrawal_column,
-      :setting_id, :setting_name, :save_setting, :has_header, :rows
+      :setting_id, :setting_name, :save_setting, :has_header
     )
+  end
+
+  PREVIEW_CACHE_TTL = 30.minutes
+
+  def store_preview_rows(rows_json)
+    token = SecureRandom.hex(16)
+    Rails.cache.write("bank_import_preview:#{token}", rows_json, expires_in: PREVIEW_CACHE_TTL)
+    token
+  end
+
+  def load_preview_rows(token)
+    return nil if token.blank?
+
+    Rails.cache.fetch("bank_import_preview:#{token}").tap do
+      Rails.cache.delete("bank_import_preview:#{token}")
+    end
   end
 
   def default_params

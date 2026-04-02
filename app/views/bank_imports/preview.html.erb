@@ -38,7 +38,7 @@
   </section>
 
   <%= form_with url: bank_imports_path, method: :post do |f| %>
-    <%= hidden_field_tag "bank_csv_import_form[rows]", @form.rows_json %>
+    <%= hidden_field_tag "bank_import_preview_token", @preview_token %>
     <%= hidden_field_tag "bank_csv_import_form[bank_account_code]", @form.bank_account_code %>
     <%= hidden_field_tag "bank_csv_import_form[deposit_counter_code]", @form.deposit_counter_code %>
     <%= hidden_field_tag "bank_csv_import_form[withdrawal_counter_code]", @form.withdrawal_counter_code %>
