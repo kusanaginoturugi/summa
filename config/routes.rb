@@ -25,10 +25,6 @@ Rails.application.routes.draw do
     get :summary, on: :collection
     get :entries, on: :member
   end
-  resources :voucher_lines, only: [] do
-    patch :update_counterpart, on: :member
-  end
-
   # Defines the root path route ("/")
   root "vouchers#new"
 end

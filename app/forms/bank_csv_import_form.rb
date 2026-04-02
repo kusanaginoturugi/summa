@@ -45,7 +45,6 @@ class BankCsvImportForm
 
     ensure_fallback_account! if fallback_code_used?
 
-    retried_encoding = false
     ActiveRecord::Base.transaction do
       persist_setting if save_setting?
       @parsed_rows.each do |row|
