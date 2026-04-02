@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_08_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_02_000000) do
   create_table "accounts", force: :cascade do |t|
     t.string "category", null: false
     t.string "code", null: false
@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_08_000000) do
     t.string "match_type", default: "contains", null: false
     t.integer "priority", default: 100, null: false
     t.datetime "updated_at", null: false
-    t.index ["keyword", "direction"], name: "index_import_rules_on_keyword_and_direction"
+    t.index ["keyword", "direction"], name: "index_import_rules_on_keyword_and_direction", unique: true
     t.index ["priority"], name: "index_import_rules_on_priority"
   end
 

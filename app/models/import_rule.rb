@@ -2,7 +2,7 @@ class ImportRule < ApplicationRecord
   MATCH_TYPES = %w[contains prefix exact].freeze
   DIRECTIONS = %w[deposit withdrawal both].freeze
 
-  validates :keyword, presence: true
+  validates :keyword, presence: true, uniqueness: { scope: :direction }
   validates :account_code, presence: true
   validates :match_type, inclusion: { in: MATCH_TYPES }
   validates :direction, inclusion: { in: DIRECTIONS }
