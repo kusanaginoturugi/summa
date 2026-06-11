@@ -2,12 +2,12 @@
 set -euxo pipefail
 
 APP_ROOT="/home/admin/summa"
-RUBY_BIN="/home/admin/.local/share/mise/shims/ruby"
+MISE_SHIMS="/home/admin/.local/share/mise/shims"
 
 cd "$APP_ROOT"
 
 export HOME="/home/admin"
-export PATH="$RUBY_BIN:$PATH"
+export PATH="$MISE_SHIMS:$PATH"
 export RAILS_ENV="production"
 export BUNDLE_GEMFILE="$APP_ROOT/Gemfile"
 export BUNDLE_PATH="$APP_ROOT/vendor/bundle"
