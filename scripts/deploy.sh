@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 APP_ROOT="/home/admin/summa"
-RUBY_BIN="/home/admin/.local/share/mise/installs/ruby/3.4.7/bin"
+RUBY_BIN="/home/admin/.local/share/mise/shims/ruby"
 
 cd "$APP_ROOT"
 
