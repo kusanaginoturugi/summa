@@ -22,10 +22,10 @@ jobs:
 
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
-      
+
       - name: Scan for known security vulnerabilities in gems used
         run: bin/bundler-audit
-      
+
   scan_js:
     runs-on: ubuntu-latest
 
@@ -145,11 +145,11 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           port: ${{ secrets.EC2_PORT }}
-          username: ubuntu
+          username: admin
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/summa
+            cd /home/admin/summa
             git config core.fileMode false
             git fetch origin
             git checkout origin/main -- scripts/deploy.sh
-            bash /home/ubuntu/summa/scripts/deploy.sh
+            bash /home/admin/summa/scripts/deploy.sh
