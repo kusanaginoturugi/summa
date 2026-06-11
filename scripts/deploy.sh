@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-APP_ROOT="/home/ubuntu/summa"
-RUBY_BIN="/home/ubuntu/.local/share/mise/installs/ruby/3.4.7/bin"
+APP_ROOT="/home/admin/summa"
+RUBY_BIN="/home/admin/.local/share/mise/installs/ruby/3.4.7/bin"
 
 cd "$APP_ROOT"
 
-export HOME="/home/ubuntu"
+export HOME="/home/admin"
 export PATH="$RUBY_BIN:$PATH"
 export RAILS_ENV="production"
 export BUNDLE_GEMFILE="$APP_ROOT/Gemfile"
