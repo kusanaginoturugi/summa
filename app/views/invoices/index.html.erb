@@ -1,0 +1,57 @@
+<% content_for :title, t(".title") %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">INVOICES</p>
+    <h1><%= t(".heading") %></h1>
+    <p class="sub"><%= t(".sub") %></p>
+    <div class="pill-row">
+      <span class="pill"><%= t(".saved_count", count: @invoices.size) %></span>
+      <%= link_to t(".new_button"), new_invoice_path, class: "pill pill--accent" %>
+    </div>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="flash flash--notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @invoices.empty? %>
+    <section class="card">
+      <p class="sub"><%= t(".empty") %> <%= link_to t(".new_button"), new_invoice_path %></p>
+    </section>
+  <% else %>
+    <section class="card card--stacked">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th><%= t(".th.invoice_number") %></th>
+              <th><%= t(".th.invoice_date") %></th>
+              <th><%= t(".th.client_name") %></th>
+              <th><%= t(".th.title") %></th>
+              <th class="text-end"><%= t(".th.total") %></th>
+              <th><%= t(".th.issued_at") %></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @invoices.each do |invoice| %>
+              <tr>
+                <td><%= invoice.invoice_number %></td>
+                <td><%= invoice.invoice_date&.strftime("%Y-%m-%d") %></td>
+                <td><%= invoice.client_name %></td>
+                <td><%= invoice.title %></td>
+                <td class="text-end"><%= number_with_delimiter(invoice.total.to_i) %></td>
+                <td><%= invoice.issued_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+                <td class="text-end"><%= link_to t(".show"), invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

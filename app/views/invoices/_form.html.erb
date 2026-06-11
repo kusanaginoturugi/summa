@@ -1,0 +1,77 @@
+<%= form_with model: invoice, class: "voucher-form" do |f| %>
+  <section class="card card--stacked">
+    <div class="card__header">
+      <div>
+        <p class="eyebrow">HEADER</p>
+        <h2><%= t("invoices.form.header") %></h2>
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <%= f.label :invoice_number, t("invoices.form.invoice_number") %>
+        <%= f.text_field :invoice_number, placeholder: t("invoices.form.invoice_number_placeholder") %>
+      </div>
+      <div class="field">
+        <%= f.label :client_name, t("invoices.form.client_name") %>
+        <%= f.text_field :client_name, required: true %>
+      </div>
+      <div class="field">
+        <%= f.label :invoice_date, t("invoices.form.invoice_date") %>
+        <%= f.date_field :invoice_date, value: invoice.invoice_date, required: true %>
+      </div>
+      <div class="field">
+        <%= f.label :due_date, t("invoices.form.due_date") %>
+        <%= f.date_field :due_date, value: invoice.due_date, required: true %>
+      </div>
+      <div class="field field--full">
+        <%= f.label :title, t("invoices.form.title") %>
+        <%= f.text_field :title, required: true %>
+      </div>
+      <div class="field field--full">
+        <%= f.label :issuer, t("invoices.form.issuer") %>
+        <%= f.text_area :issuer, rows: 3, required: true, placeholder: t("invoices.form.issuer_placeholder") %>
+      </div>
+    </div>
+  </section>
+
+  <section class="card card--stacked">
+    <div class="card__header">
+      <div>
+        <p class="eyebrow">ITEMS</p>
+        <h2><%= t("invoices.form.items") %></h2>
+        <p class="sub"><%= t("invoices.form.items_hint") %></p>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :items_json, t("invoices.form.items_json") %>
+      <%= f.text_area :items_json, rows: 10, required: true %>
+    </div>
+
+    <div class="totals">
+      <div>
+        <p class="eyebrow"><%= t("invoices.form.subtotal") %></p>
+        <p class="totals__value"><%= number_with_delimiter(invoice.subtotal.to_i) %></p>
+      </div>
+      <div>
+        <p class="eyebrow"><%= t("invoices.form.tax") %></p>
+        <p class="totals__value"><%= number_with_delimiter(invoice.tax.to_i) %></p>
+      </div>
+      <div>
+        <p class="eyebrow"><%= t("invoices.form.total") %></p>
+        <p class="totals__value"><%= number_with_delimiter(invoice.total.to_i) %></p>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :note, t("invoices.form.note") %>
+      <%= f.text_area :note, rows: 4 %>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn btn--primary"><%= submit_label %></button>
+      <%= link_to t("invoices.form.back"), invoices_path, class: "btn btn--ghost" %>
+    </div>
+  </section>
+<% end %>

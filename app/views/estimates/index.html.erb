@@ -1,0 +1,57 @@
+<% content_for :title, "見積書一覧 | Summa" %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">ESTIMATES</p>
+    <h1>見積書一覧</h1>
+    <p class="sub">見積書は会計データと連携せず、独立して保存されます。</p>
+    <div class="pill-row">
+      <span class="pill">保存済み <%= @estimates.size %> 件</span>
+      <%= link_to "見積書作成", new_estimate_path, class: "pill pill--accent" %>
+    </div>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="flash flash--notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @estimates.empty? %>
+    <section class="card">
+      <p class="sub">まだ見積書がありません。<%= link_to "見積書作成", new_estimate_path %></p>
+    </section>
+  <% else %>
+    <section class="card card--stacked">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>見積番号</th>
+              <th>発行日</th>
+              <th>見積先</th>
+              <th>有効期限</th>
+              <th class="text-end">合計</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @estimates.each do |estimate| %>
+              <tr>
+                <td><%= estimate.estimate_number %></td>
+                <td><%= estimate.issued_on.strftime("%Y-%m-%d") %></td>
+                <td><%= estimate.recipient %></td>
+                <td><%= estimate.valid_until.strftime("%Y-%m-%d") %></td>
+                <td class="text-end"><%= number_with_delimiter(estimate.total.to_i) %> 円</td>
+                <td class="text-end">
+                  <%= link_to "PDF", pdf_estimate_path(estimate), class: "btn btn-outline-secondary btn-sm" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

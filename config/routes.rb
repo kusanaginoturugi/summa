@@ -10,6 +10,10 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :vouchers, only: %i[index new create edit update destroy]
+  resources :invoices do
+    get :export, on: :member
+    post :generate_pdf, on: :member
+  end
   get "vouchers/quick" => "vouchers#quick", as: :quick_vouchers
   post "vouchers/quick" => "vouchers#create_quick"
   get "vouchers/register" => "vouchers#register", as: :register_vouchers
@@ -21,6 +25,9 @@ Rails.application.routes.draw do
     patch :fiscal_year, on: :collection
   end
   resources :bank_imports, only: %i[new create]
+  resources :estimates, only: %i[index new create] do
+    get :pdf, on: :member
+  end
   resources :accounts, only: %i[index new create edit update destroy] do
     get :summary, on: :collection
     get :entries, on: :member

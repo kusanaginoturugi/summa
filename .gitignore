@@ -30,6 +30,14 @@
 
 /public/assets
 
+# Embedded invoice CLI build workspace.
+/invoice/.git/
+/invoice/*.pdf
+/invoice/*.json
+/invoice/Inter/
+/invoice/demo.gif
+/invoice/assets/
+/invoice/logos/
+
 # Ignore key files for decrypting credentials and more.
 /config/*.key
-

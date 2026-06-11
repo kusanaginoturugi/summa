@@ -255,6 +255,39 @@ input:focus {
   grid-template-columns: repeat(5, 1fr);
 }
 
+.estimate-entry-head,
+.estimate-entry-row {
+  display: grid;
+  grid-template-columns: minmax(240px, 2fr) minmax(90px, 0.5fr) minmax(140px, 0.8fr) 42px;
+  gap: 8px;
+  align-items: center;
+}
+
+.estimate-entry-head {
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.estimate-entry-row {
+  padding: 10px 12px;
+  background: var(--panel-strong);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+
 .entry-grid-accounts {
   grid-template-columns: 1fr 2fr 1fr 2fr 120px 170px;
 }
@@ -386,6 +419,11 @@ input:focus {
   gap: 16px;
 }
 
+.estimate-back-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 @media (max-width: 720px) {
   .entry-head {
     display: none;
@@ -402,6 +440,22 @@ input:focus {
 
   .entry-row button {
     order: 2;
+    justify-self: end;
+  }
+
+  .estimate-entry-head {
+    display: none;
+  }
+
+  .estimate-entry-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .estimate-entry-row input:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .estimate-entry-row .icon-button {
     justify-self: end;
   }
 }

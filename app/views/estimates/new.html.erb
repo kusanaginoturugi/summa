@@ -1,0 +1,102 @@
+<% content_for :title, "見積書作成 | Summa" %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">NEW ESTIMATE</p>
+    <h1>見積書作成</h1>
+    <p class="sub">保存後、一覧からPDFをダウンロードできます。</p>
+  </div>
+
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <%= form_with model: @estimate, class: "voucher-form", data: { controller: "estimate-form" } do |f| %>
+    <section class="card card--stacked">
+      <div class="card__header">
+        <div>
+          <p class="eyebrow">HEADER</p>
+          <h2>見積情報</h2>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <%= f.label :estimate_number, "見積番号" %>
+          <%= f.text_field :estimate_number, required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :issued_on, "発行日" %>
+          <%= f.date_field :issued_on, required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :valid_until, "見積有効期限" %>
+          <%= f.date_field :valid_until, required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :tax_rate, "税率（%）" %>
+          <%= f.number_field :tax_rate, step: 0.01, min: 0, value: @estimate.tax_rate || 0, required: true %>
+        </div>
+        <div class="field field--full">
+          <%= f.label :issuer, "発行元" %>
+          <%= f.text_area :issuer, rows: 3, required: true, placeholder: "株式会社テスト\\n東京都..." %>
+        </div>
+        <div class="field field--full">
+          <%= f.label :recipient, "見積先" %>
+          <%= f.text_area :recipient, rows: 2, required: true, placeholder: "山田太郎 様" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card--stacked">
+      <div class="card__header">
+        <div>
+          <p class="eyebrow">DETAIL</p>
+          <h2>見積明細</h2>
+        </div>
+        <div class="card__actions">
+          <button type="button" class="btn btn--ghost" data-action="click->estimate-form#addRow">＋ 行を追加</button>
+        </div>
+      </div>
+
+      <div class="estimate-entry-head">
+        <span>品目</span>
+        <span>数量</span>
+        <span>単価</span>
+        <span></span>
+      </div>
+
+      <div class="entry-list" data-estimate-form-target="rows" data-next-index="<%= @estimate.estimate_items.size %>">
+        <%= f.fields_for :estimate_items do |item_fields| %>
+          <div class="estimate-entry-row" data-estimate-form-target="row">
+            <%= item_fields.text_field :description, required: true, placeholder: "作業費" %>
+            <%= item_fields.number_field :quantity, value: item_fields.object.quantity || 1, min: 1, step: 1, required: true %>
+            <%= item_fields.number_field :unit_price, min: 0, step: 1, required: true, placeholder: "50000" %>
+            <%= item_fields.hidden_field :_destroy, value: 0, data: { estimate_form_target: "destroyFlag" } %>
+            <button type="button" class="icon-button" aria-label="行を削除" data-action="click->estimate-form#removeRow">✕</button>
+          </div>
+        <% end %>
+      </div>
+
+      <template data-estimate-form-target="rowTemplate">
+        <div class="estimate-entry-row" data-estimate-form-target="row">
+          <input type="text" name="estimate[estimate_items_attributes][__INDEX__][description]" placeholder="作業費" required>
+          <input type="number" name="estimate[estimate_items_attributes][__INDEX__][quantity]" value="1" min="1" step="1" required>
+          <input type="number" name="estimate[estimate_items_attributes][__INDEX__][unit_price]" min="0" step="1" required>
+          <input type="hidden" name="estimate[estimate_items_attributes][__INDEX__][_destroy]" value="0" data-estimate-form-target="destroyFlag">
+          <button type="button" class="icon-button" aria-label="行を削除" data-action="click->estimate-form#removeRow">✕</button>
+        </div>
+      </template>
+
+      <div class="field">
+        <%= f.label :note, "備考" %>
+        <%= f.text_area :note, rows: 4, placeholder: "納期、支払条件など" %>
+      </div>
+
+      <div class="actions">
+        <%= f.submit "見積書を保存", class: "btn btn--primary" %>
+        <%= link_to "一覧に戻る", estimates_path, class: "btn btn--ghost estimate-back-button" %>
+      </div>
+    </section>
+  <% end %>
+</div>
