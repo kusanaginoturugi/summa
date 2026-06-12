@@ -41,6 +41,7 @@
 /invoice/.github/
 /invoice/.gitignore
 /invoice/logo.png
+/invoice/invoice
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key

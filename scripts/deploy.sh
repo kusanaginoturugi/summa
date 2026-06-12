@@ -25,3 +25,6 @@ bin/rails assets:precompile
 
 sudo -n /usr/bin/systemctl restart summa.service
 sudo -n /usr/bin/systemctl is-active summa.service
+
+cd "$APP_ROOT/invoice"
+go build
