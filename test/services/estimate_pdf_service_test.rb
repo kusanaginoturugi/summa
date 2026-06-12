@@ -11,12 +11,18 @@ class EstimatePdfServiceTest < ActiveSupport::TestCase
       tax_rate: 10,
       note: "備考"
     )
-    estimate.estimate_items.build(description: "作業費", quantity: 1, unit_price: 50_000)
+    estimate.estimate_items.build(
+      description: "作業費",
+      detail: "管理画面の改修\nPDF出力対応",
+      quantity: 1,
+      unit_price: 50_000
+    )
 
     data = EstimatePdfService.new(estimate).send(:document_data)
 
     assert_equal 0.1, data[:tax]
     assert_equal [ "作業費" ], data[:items]
+    assert_equal [ "管理画面の改修\nPDF出力対応" ], data[:details]
     assert_equal [ 50_000.0 ], data[:rates]
   end
 end

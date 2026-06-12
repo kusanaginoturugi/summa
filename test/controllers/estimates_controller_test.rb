@@ -26,6 +26,7 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
           estimate_items_attributes: {
             "0" => {
               description: "作業費",
+              detail: "管理画面の改修\nPDF出力対応",
               quantity: "1",
               unit_price: "50000"
             }
@@ -46,6 +47,7 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "見積書編集"
     assert_select "form[action=?]", estimate_path(estimate)
     assert_select "input[name='estimate[estimate_items_attributes][0][id]'][value=?]", estimate.estimate_items.first.id.to_s
+    assert_select "textarea[name='estimate[estimate_items_attributes][0][detail]']", "既存の詳細"
   end
 
   test "updates an estimate and its items" do
@@ -72,6 +74,7 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
             },
             "1" => {
               description: "更新後の作業費",
+              detail: "更新後の詳細",
               quantity: "2",
               unit_price: "30000"
             }
@@ -85,6 +88,7 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "鈴木太郎", estimate.recipient
     assert_equal "更新した備考", estimate.note
     assert_equal [ "更新後の作業費" ], estimate.estimate_items.pluck(:description)
+    assert_equal [ "更新後の詳細" ], estimate.estimate_items.pluck(:detail)
     assert_equal 60_000, estimate.subtotal
   end
 
@@ -101,6 +105,7 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
       estimate_items_attributes: {
         "0" => {
           description: "作業費",
+          detail: "既存の詳細",
           quantity: 1,
           unit_price: 50_000
         }

@@ -58,7 +58,7 @@ class EstimatesController < ApplicationController
   def estimate_params
     params.require(:estimate).permit(
       :estimate_number, :issued_on, :valid_until, :issuer, :recipient, :tax_rate, :note,
-      estimate_items_attributes: %i[id description quantity unit_price position _destroy]
+      estimate_items_attributes: %i[id description detail quantity unit_price position _destroy]
     )
   end
 

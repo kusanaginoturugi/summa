@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
   create_table "accounts", force: :cascade do |t|
     t.string "category", null: false
     t.string "code", null: false
@@ -51,6 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_010000) do
   create_table "estimate_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", null: false
+    t.text "detail"
     t.integer "estimate_id", null: false
     t.integer "position", default: 0, null: false
     t.integer "quantity", default: 1, null: false

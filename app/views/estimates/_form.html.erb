@@ -47,7 +47,7 @@
     </div>
 
     <div class="estimate-entry-head">
-      <span>品目</span>
+      <span>品目・詳細</span>
       <span>数量</span>
       <span>単価</span>
       <span></span>
@@ -56,7 +56,10 @@
     <div class="entry-list" data-estimate-form-target="rows" data-next-index="<%= estimate.estimate_items.size %>">
       <%= f.fields_for :estimate_items do |item_fields| %>
         <div class="estimate-entry-row" data-estimate-form-target="row">
-          <%= item_fields.text_field :description, required: true, placeholder: "作業費" %>
+          <div class="estimate-item-description">
+            <%= item_fields.text_field :description, required: true, placeholder: "作業費" %>
+            <%= item_fields.text_area :detail, rows: 2, placeholder: "作業内容や内訳など" %>
+          </div>
           <%= item_fields.number_field :quantity, value: item_fields.object.quantity || 1, min: 1, step: 1, required: true %>
           <%= item_fields.number_field :unit_price, min: 0, step: 1, required: true, placeholder: "50000" %>
           <%= item_fields.hidden_field :_destroy, value: 0, data: { estimate_form_target: "destroyFlag" } %>
@@ -67,7 +70,10 @@
 
     <template data-estimate-form-target="rowTemplate">
       <div class="estimate-entry-row" data-estimate-form-target="row">
-        <input type="text" name="estimate[estimate_items_attributes][__INDEX__][description]" placeholder="作業費" required>
+        <div class="estimate-item-description">
+          <input type="text" name="estimate[estimate_items_attributes][__INDEX__][description]" placeholder="作業費" required>
+          <textarea name="estimate[estimate_items_attributes][__INDEX__][detail]" rows="2" placeholder="作業内容や内訳など"></textarea>
+        </div>
         <input type="number" name="estimate[estimate_items_attributes][__INDEX__][quantity]" value="1" min="1" step="1" required>
         <input type="number" name="estimate[estimate_items_attributes][__INDEX__][unit_price]" min="0" step="1" required>
         <input type="hidden" name="estimate[estimate_items_attributes][__INDEX__][_destroy]" value="0" data-estimate-form-target="destroyFlag">

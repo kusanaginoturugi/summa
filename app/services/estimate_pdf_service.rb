@@ -50,6 +50,7 @@ class EstimatePdfService
       due: estimate.valid_until.strftime("%Y/%m/%d"),
       currency: "JPY",
       items: estimate.estimate_items.map(&:description),
+      details: estimate.estimate_items.map { |item| item.detail.to_s },
       quantities: estimate.estimate_items.map(&:quantity),
       rates: estimate.estimate_items.map { |item| item.unit_price.to_f },
       tax: (estimate.tax_rate.to_d / 100).to_f,
