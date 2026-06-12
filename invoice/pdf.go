@@ -149,19 +149,56 @@ func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.Br(48)
 }
 
-func writeRow(pdf *gopdf.GoPdf, currency, item string, quantity int, rate float64) {
+func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rate float64) {
+	const (
+		itemLineHeight   float64 = 16
+		detailLineHeight float64 = 14
+		rowBottomPadding float64 = 8
+	)
+
 	_ = pdf.SetFont("Inter", "", 11)
 	pdf.SetTextColor(0, 0, 0)
 
 	total := float64(quantity) * rate
-	_ = pdf.Cell(nil, item)
+	rowY := pdf.GetY()
+	itemLines := documentLines(item)
+	if len(itemLines) == 0 {
+		itemLines = []string{""}
+	}
+
+	_ = pdf.Cell(nil, itemLines[0])
 	pdf.SetX(quantityColumnOffset)
 	_ = pdf.Cell(nil, strconv.Itoa(quantity))
 	pdf.SetX(rateColumnOffset)
 	_ = pdf.Cell(nil, formatCurrency(currency, rate))
 	pdf.SetX(amountColumnOffset)
 	_ = pdf.Cell(nil, formatCurrency(currency, total))
-	pdf.Br(24)
+
+	pdf.SetX(40)
+	pdf.SetY(rowY + itemLineHeight)
+	_ = pdf.SetFont("Inter", "", 9)
+	pdf.SetTextColor(90, 90, 90)
+
+	detailLines := append(itemLines[1:], documentLines(detail)...)
+	for _, line := range detailLines {
+		_ = pdf.Cell(nil, line)
+		pdf.Br(detailLineHeight)
+	}
+
+	rowHeight := itemLineHeight + rowBottomPadding
+	if len(detailLines) > 0 {
+		rowHeight += float64(len(detailLines)) * detailLineHeight
+	}
+	pdf.SetX(40)
+	pdf.SetY(rowY + rowHeight)
+}
+
+func documentLines(text string) []string {
+	if text == "" {
+		return nil
+	}
+
+	return strings.Split(strings.ReplaceAll(text, `\n`, "\n"), "\n")
 }
 
 func writeTotals(pdf *gopdf.GoPdf, currency string, subtotal float64, tax float64, discount float64) {

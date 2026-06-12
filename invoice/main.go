@@ -29,6 +29,7 @@ type Invoice struct {
 	Due  string `json:"due" yaml:"due"`
 
 	Items      []string  `json:"items" yaml:"items"`
+	Details    []string  `json:"details" yaml:"details"`
 	Quantities []int     `json:"quantities" yaml:"quantities"`
 	Rates      []float64 `json:"rates" yaml:"rates"`
 
@@ -92,6 +93,7 @@ func addDocumentFlags(cmd *cobra.Command, document *Invoice, defaults Invoice, i
 	cmd.Flags().Float64SliceVarP(&document.Rates, "rate", "r", defaults.Rates, "Rates")
 	cmd.Flags().IntSliceVarP(&document.Quantities, "quantity", "q", defaults.Quantities, "Quantities")
 	cmd.Flags().StringSliceVarP(&document.Items, "item", "i", defaults.Items, "Items")
+	cmd.Flags().StringArrayVar(&document.Details, "detail", defaults.Details, "Item details")
 
 	cmd.Flags().StringVarP(&document.Logo, "logo", "l", defaults.Logo, "Company logo")
 	cmd.Flags().StringVarP(&document.From, "from", "f", defaults.From, "Issuing company")
@@ -177,7 +179,12 @@ func generateDocument(cmd *cobra.Command, document *Invoice, importPath, output 
 			r = document.Rates[i]
 		}
 
-		writeRow(&pdf, document.Currency, document.Items[i], q, r)
+		detail := ""
+		if len(document.Details) > i {
+			detail = document.Details[i]
+		}
+
+		writeRow(&pdf, document.Currency, document.Items[i], detail, q, r)
 		subtotal += float64(q) * r
 	}
 	if document.Note != "" {

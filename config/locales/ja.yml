@@ -197,7 +197,7 @@ ja:
       due_date: "支払期限"
       title: "件名"
       items: "品目"
-      items_hint: "JSON配列で description / quantity / unit_price / tax_rate を入力します。"
+      items_hint: "JSON配列で description / detail（任意）/ quantity / unit_price / tax_rate を入力します。detail内の改行はPDFにも反映されます。"
       items_json: "品目JSON"
       subtotal: "小計"
       tax: "消費税"

@@ -47,7 +47,9 @@ Generate new invoice:
 
 ```bash
 invoice generate \
-    --item "作業費" --quantity 2 \
+    --item "作業費" \
+    --detail "管理画面の改修\nPDF出力対応" \
+    --quantity 2 \
     --note "備考です" \
     --output japanese-invoice.pdf
 ```
@@ -78,6 +80,7 @@ Or, save repeated information with JSON / YAML:
     "to": "山田太郎",
     "currency": "JPY",
     "items": ["作業費"],
+    "details": ["管理画面の改修\nPDF出力対応"],
     "quantities": [2],
     "rates": [25000],
     "note": "備考です"

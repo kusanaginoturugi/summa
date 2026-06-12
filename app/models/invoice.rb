@@ -89,7 +89,7 @@ class Invoice < ApplicationRecord
 
   def default_items_json
     JSON.pretty_generate([
-      { description: "", quantity: 1, unit_price: 0, tax_rate: 0.1 }
+      { description: "", detail: "", quantity: 1, unit_price: 0, tax_rate: 0.1 }
     ])
   end
 
@@ -103,12 +103,14 @@ class Invoice < ApplicationRecord
     items.map do |item|
       row = item.is_a?(Hash) ? item : {}
       description = row["description"].presence || row[:description].to_s
+      detail = row["detail"].presence || row[:detail].to_s
       quantity = (row["quantity"] || row[:quantity] || 1).to_d
       unit_price = (row["unit_price"] || row[:unit_price] || row["price"] || row[:price] || 0).to_d
       tax_rate = (row["tax_rate"] || row[:tax_rate] || 0).to_d
       amount = quantity * unit_price
       {
         description: description,
+        detail: detail,
         quantity: quantity,
         unit_price: unit_price,
         tax_rate: tax_rate,

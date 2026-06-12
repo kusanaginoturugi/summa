@@ -42,6 +42,7 @@ class InvoicePdfGenerator
       date: @invoice.invoice_date.strftime("%Y/%m/%d"),
       due: @invoice.due_date.strftime("%Y/%m/%d"),
       items: items.map { |item| item[:description] },
+      details: items.map { |item| item[:detail] },
       quantities: items.map { |item| item[:quantity].to_i },
       rates: items.map { |item| item[:unit_price].to_f },
       tax: subtotal.zero? ? 0 : (@invoice.tax.to_d / subtotal).to_f,

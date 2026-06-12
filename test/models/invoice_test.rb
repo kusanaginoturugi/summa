@@ -61,7 +61,15 @@ class InvoiceTest < ActiveSupport::TestCase
       invoice_date: Date.new(2026, 6, 4),
       due_date: Date.new(2026, 6, 30),
       title: "開発費",
-      items_json: JSON.generate([ { description: "実装", quantity: 1, unit_price: 10_000, tax_rate: 0.1 } ]),
+      items_json: JSON.generate([
+        {
+          description: "実装",
+          detail: "管理画面の改修\nPDF出力対応",
+          quantity: 1,
+          unit_price: 10_000,
+          tax_rate: 0.1
+        }
+      ]),
       note: "翌月末払い"
     )
 
@@ -73,5 +81,6 @@ class InvoiceTest < ActiveSupport::TestCase
     assert_equal 11_000, payload[:total]
     assert_equal "翌月末払い", payload[:note]
     assert_equal "実装", payload[:items].first[:description]
+    assert_equal "管理画面の改修\nPDF出力対応", payload[:items].first[:detail]
   end
 end

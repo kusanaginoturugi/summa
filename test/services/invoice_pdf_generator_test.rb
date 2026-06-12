@@ -19,7 +19,15 @@ class InvoicePdfGeneratorTest < ActiveSupport::TestCase
       invoice_date: Date.new(2026, 6, 4),
       due_date: Date.new(2026, 6, 30),
       title: "開発費",
-      items_json: JSON.generate([ { description: "実装", quantity: 1, unit_price: 10_000, tax_rate: 0.1 } ])
+      items_json: JSON.generate([
+        {
+          description: "実装",
+          detail: "管理画面の改修\nPDF出力対応",
+          quantity: 1,
+          unit_price: 10_000,
+          tax_rate: 0.1
+        }
+      ])
     )
   end
 
@@ -54,6 +62,7 @@ class InvoicePdfGeneratorTest < ActiveSupport::TestCase
     assert_equal "株式会社発行元", payload["from"]
     assert_equal "株式会社テスト", payload["to"]
     assert_equal [ "実装" ], payload["items"]
+    assert_equal [ "管理画面の改修\nPDF出力対応" ], payload["details"]
     assert_equal 0.1, payload["tax"]
   ensure
     FileUtils.rm_f(fake_cli)
