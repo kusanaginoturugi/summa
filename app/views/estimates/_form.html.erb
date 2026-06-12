@@ -58,7 +58,7 @@
         <div class="estimate-entry-row" data-estimate-form-target="row">
           <div class="estimate-item-description">
             <%= item_fields.text_field :description, required: true, placeholder: "作業費" %>
-            <%= item_fields.text_area :detail, rows: 2, placeholder: "作業内容や内訳など" %>
+            <%= item_fields.text_area :detail, rows: 10, placeholder: "作業内容や内訳など" %>
           </div>
           <%= item_fields.number_field :quantity, value: item_fields.object.quantity || 1, min: 1, step: 1, required: true %>
           <%= item_fields.number_field :unit_price, min: 0, step: 1, required: true, placeholder: "50000" %>
