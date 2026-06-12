@@ -153,6 +153,7 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 	const (
 		itemLineHeight   float64 = 16
 		detailLineHeight float64 = 14
+		detailIndent     float64 = 18
 		rowBottomPadding float64 = 8
 	)
 
@@ -181,6 +182,7 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 
 	detailLines := append(itemLines[1:], documentLines(detail)...)
 	for _, line := range detailLines {
+		pdf.SetX(40 + detailIndent)
 		_ = pdf.Cell(nil, line)
 		pdf.Br(detailLineHeight)
 	}
