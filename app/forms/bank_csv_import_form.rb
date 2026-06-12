@@ -111,8 +111,8 @@ class BankCsvImportForm
 
   def persist_setting
     setting = if setting_id.present?
-                BankImportSetting.find_by(id: setting_id)
-              end
+      BankImportSetting.find_by(id: setting_id)
+    end
     setting ||= BankImportSetting.find_or_initialize_by(name: setting_name.presence || I18n.t("bank_imports.shared.default_setting_name"))
 
     attrs = {

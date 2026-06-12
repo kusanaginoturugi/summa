@@ -1,0 +1,15 @@
+<% content_for :title, "見積書編集 | Summa" %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">EDIT ESTIMATE</p>
+    <h1>見積書編集</h1>
+    <p class="sub"><%= @estimate.estimate_number %> の内容を修正します。</p>
+  </div>
+
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <%= render "form", estimate: @estimate, submit_label: "見積書を更新" %>
+</div>

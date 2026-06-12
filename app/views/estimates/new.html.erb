@@ -1,0 +1,15 @@
+<% content_for :title, "見積書作成 | Summa" %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">NEW ESTIMATE</p>
+    <h1>見積書作成</h1>
+    <p class="sub">保存後、一覧からPDFをダウンロードできます。</p>
+  </div>
+
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <%= render "form", estimate: @estimate, submit_label: "見積書を保存" %>
+</div>

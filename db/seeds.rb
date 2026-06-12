@@ -26,6 +26,7 @@ accounts = [
   ["206", "短期借入金", :liability],
   ["207", "長期借入金", :liability],
   ["208", "預り金", :liability],
+  ["210", "仮受消費税", :liability],
 
   # 純資産（個人事業主向け）
   ["301", "元入金", :equity],
@@ -55,7 +56,7 @@ accounts = [
   ["515", "修繕費", :expense],
   ["516", "新聞図書費", :expense],
   ["520", "雑費", :expense],
-  ["999", "貸借不一致", :expense],
+  ["999", "貸借不一致", :expense]
 ]
 
 accounts.each do |code, name, category, parent_code|

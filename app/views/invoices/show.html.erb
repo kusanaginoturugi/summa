@@ -1,0 +1,72 @@
+<% content_for :title, t(".title", number: @invoice.invoice_number) %>
+
+<div class="page-shell">
+  <div class="hero">
+    <p class="eyebrow">INVOICE</p>
+    <h1><%= @invoice.invoice_number %></h1>
+    <p class="sub"><%= [@invoice.client_name, @invoice.title].join(" / ") %></p>
+    <div class="pill-row">
+      <%= link_to t(".edit"), edit_invoice_path(@invoice), class: "pill" %>
+      <%= link_to t(".export"), export_invoice_path(@invoice, format: :json), class: "pill pill--ghost" %>
+      <%= button_to t(".generate_pdf"), generate_pdf_invoice_path(@invoice), method: :post, class: "pill pill--accent" %>
+      <% if @invoice.voucher_id.present? %>
+        <%= link_to t(".voucher"), edit_voucher_path(@invoice.voucher), class: "pill" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="flash flash--notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="flash flash--alert"><%= flash[:alert] %></div>
+  <% end %>
+
+  <section class="card card--stacked">
+    <div class="field-grid">
+      <div>
+        <p class="eyebrow"><%= t(".invoice_date") %></p>
+        <p><%= @invoice.invoice_date&.strftime("%Y-%m-%d") %></p>
+      </div>
+      <div>
+        <p class="eyebrow"><%= t(".due_date") %></p>
+        <p><%= @invoice.due_date&.strftime("%Y-%m-%d") %></p>
+      </div>
+      <div>
+        <p class="eyebrow"><%= t(".total") %></p>
+        <p><%= number_with_delimiter(@invoice.total.to_i) %></p>
+      </div>
+      <div>
+        <p class="eyebrow"><%= t(".pdf_path") %></p>
+        <p><%= @invoice.pdf_path.presence || "—" %></p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th><%= t(".th.description") %></th>
+            <th class="text-end"><%= t(".th.quantity") %></th>
+            <th class="text-end"><%= t(".th.unit_price") %></th>
+            <th class="text-end"><%= t(".th.tax_rate") %></th>
+            <th class="text-end"><%= t(".th.amount") %></th>
+            <th class="text-end"><%= t(".th.tax") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @invoice.invoice_payload[:items].each do |item| %>
+            <tr>
+              <td><%= item[:description] %></td>
+              <td class="text-end"><%= item[:quantity] %></td>
+              <td class="text-end"><%= number_with_delimiter(item[:unit_price].to_i) %></td>
+              <td class="text-end"><%= item[:tax_rate] %></td>
+              <td class="text-end"><%= number_with_delimiter(item[:amount].to_i) %></td>
+              <td class="text-end"><%= number_with_delimiter(item[:tax].to_i) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
