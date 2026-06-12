@@ -12,11 +12,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:embed "fonts/Jigmo.ttf"
-var jigmoFont []byte
+//go:embed "fonts/GenEiKoburiMincho.ttf"
+var documentFont []byte
 
-//go:embed "fonts/Jigmo.ttf"
-var jigmoBoldFont []byte
+//go:embed "fonts/GenEiKoburiMincho.ttf"
+var documentBoldFont []byte
 
 type Invoice struct {
 	Id    string `json:"id" yaml:"id"`
@@ -153,12 +153,12 @@ func generateDocument(cmd *cobra.Command, document *Invoice, importPath, output 
 	})
 	pdf.SetMargins(40, 40, 40, 40)
 	pdf.AddPage()
-	err := pdf.AddTTFFontData("Inter", jigmoFont)
+	err := pdf.AddTTFFontData("Document", documentFont)
 	if err != nil {
 		return err
 	}
 
-	err = pdf.AddTTFFontData("Inter-Bold", jigmoBoldFont)
+	err = pdf.AddTTFFontData("Document-Bold", documentBoldFont)
 	if err != nil {
 		return err
 	}

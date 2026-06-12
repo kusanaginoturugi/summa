@@ -38,11 +38,11 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 
 	for i := 0; i < len(fromLines); i++ {
 		if i == 0 {
-			_ = pdf.SetFont("Inter", "", 12)
+			_ = pdf.SetFont("Document", "", 12)
 			_ = pdf.Cell(nil, fromLines[i])
 			pdf.Br(18)
 		} else {
-			_ = pdf.SetFont("Inter", "", 10)
+			_ = pdf.SetFont("Document", "", 10)
 			_ = pdf.Cell(nil, fromLines[i])
 			pdf.Br(15)
 		}
@@ -54,11 +54,11 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 }
 
 func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
-	_ = pdf.SetFont("Inter-Bold", "", 24)
+	_ = pdf.SetFont("Document-Bold", "", 24)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.Cell(nil, title)
 	pdf.Br(36)
-	_ = pdf.SetFont("Inter", "", 12)
+	_ = pdf.SetFont("Document", "", 12)
 	pdf.SetTextColor(100, 100, 100)
 	_ = pdf.Cell(nil, "#")
 	_ = pdf.Cell(nil, id)
@@ -70,7 +70,7 @@ func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 }
 
 func writeDueDate(pdf *gopdf.GoPdf, label, due string) {
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
 	_ = pdf.Cell(nil, label)
@@ -83,7 +83,7 @@ func writeDueDate(pdf *gopdf.GoPdf, label, due string) {
 
 func writeBillTo(pdf *gopdf.GoPdf, label, to string) {
 	pdf.SetTextColor(75, 75, 75)
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	_ = pdf.Cell(nil, label)
 	pdf.Br(18)
 	pdf.SetTextColor(75, 75, 75)
@@ -93,11 +93,11 @@ func writeBillTo(pdf *gopdf.GoPdf, label, to string) {
 
 	for i := 0; i < len(toLines); i++ {
 		if i == 0 {
-			_ = pdf.SetFont("Inter", "", 15)
+			_ = pdf.SetFont("Document", "", 15)
 			_ = pdf.Cell(nil, toLines[i])
 			pdf.Br(20)
 		} else {
-			_ = pdf.SetFont("Inter", "", 10)
+			_ = pdf.SetFont("Document", "", 10)
 			_ = pdf.Cell(nil, toLines[i])
 			pdf.Br(15)
 		}
@@ -106,7 +106,7 @@ func writeBillTo(pdf *gopdf.GoPdf, label, to string) {
 }
 
 func writeHeaderRow(pdf *gopdf.GoPdf) {
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "品目")
 	pdf.SetX(quantityColumnOffset)
@@ -121,11 +121,11 @@ func writeHeaderRow(pdf *gopdf.GoPdf) {
 func writeNotes(pdf *gopdf.GoPdf, notes string) {
 	pdf.SetY(600)
 
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "備考")
 	pdf.Br(18)
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(0, 0, 0)
 
 	formattedNotes := strings.ReplaceAll(notes, `\n`, "\n")
@@ -141,7 +141,7 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.SetY(800)
 
-	_ = pdf.SetFont("Inter", "", 10)
+	_ = pdf.SetFont("Document", "", 10)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, id)
 	pdf.SetStrokeColor(225, 225, 225)
@@ -157,7 +157,7 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 		rowBottomPadding float64 = 8
 	)
 
-	_ = pdf.SetFont("Inter", "", 11)
+	_ = pdf.SetFont("Document", "", 11)
 	pdf.SetTextColor(0, 0, 0)
 
 	total := float64(quantity) * rate
@@ -177,7 +177,7 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 
 	pdf.SetX(40)
 	pdf.SetY(rowY + itemLineHeight)
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(90, 90, 90)
 
 	detailLines := append(itemLines[1:], documentLines(detail)...)
@@ -217,7 +217,7 @@ func writeTotals(pdf *gopdf.GoPdf, currency string, subtotal float64, tax float6
 }
 
 func writeTotal(pdf *gopdf.GoPdf, currency, label string, total float64) {
-	_ = pdf.SetFont("Inter", "", 9)
+	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
 	_ = pdf.Cell(nil, label)
@@ -225,7 +225,7 @@ func writeTotal(pdf *gopdf.GoPdf, currency, label string, total float64) {
 	_ = pdf.SetFontSize(12)
 	pdf.SetX(amountColumnOffset - 15)
 	if label == totalLabel {
-		_ = pdf.SetFont("Inter-Bold", "", 11.5)
+		_ = pdf.SetFont("Document-Bold", "", 11.5)
 	}
 	_ = pdf.Cell(nil, formatCurrency(currency, total))
 	pdf.Br(24)

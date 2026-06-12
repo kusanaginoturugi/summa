@@ -69,6 +69,9 @@ invoice estimate \
 The estimate command uses `見積書`, `見積先`, and `見積有効期限` by default.
 It accepts the same flags and JSON/YAML import format as `generate`.
 
+Japanese text is rendered with GenEi Koburi Mincho. The bundled font is
+licensed under the SIL Open Font License 1.1; see `fonts/OFL.txt`.
+
 ### Configuration File
 
 Or, save repeated information with JSON / YAML:
