@@ -1,4 +1,7 @@
-<%= form_with model: invoice, class: "voucher-form" do |f| %>
+<% invoice_items = invoice.invoice_payload[:items] %>
+<% invoice_items = [ { description: "", detail: "", quantity: 1, unit_price: 0, tax_rate: 0.1 } ] if invoice_items.empty? %>
+
+<%= form_with model: invoice, class: "voucher-form", data: { controller: "invoice-form" } do |f| %>
   <section class="card card--stacked">
     <div class="card__header">
       <div>
@@ -40,14 +43,46 @@
       <div>
         <p class="eyebrow">ITEMS</p>
         <h2><%= t("invoices.form.items") %></h2>
-        <p class="sub"><%= t("invoices.form.items_hint") %></p>
+      </div>
+      <div class="card__actions">
+        <button type="button" class="btn btn--ghost" data-action="click->invoice-form#addRow">＋ 行を追加</button>
       </div>
     </div>
 
-    <div class="field">
-      <%= f.label :items_json, t("invoices.form.items_json") %>
-      <%= f.text_area :items_json, rows: 10, required: true %>
+    <div class="estimate-entry-head">
+      <span>品目・詳細</span>
+      <span>数量</span>
+      <span>単価</span>
+      <span></span>
     </div>
+
+    <div class="entry-list" data-invoice-form-target="rows" data-next-index="<%= invoice_items.size %>">
+      <% invoice_items.each_with_index do |item, index| %>
+        <div class="estimate-entry-row" data-invoice-form-target="row">
+          <div class="estimate-item-description">
+            <input type="text" name="invoice[invoice_items][<%= index %>][description]" value="<%= item[:description] %>" placeholder="作業費" required>
+            <textarea name="invoice[invoice_items][<%= index %>][detail]" rows="2" placeholder="作業内容や内訳など"><%= item[:detail] %></textarea>
+          </div>
+          <input type="number" name="invoice[invoice_items][<%= index %>][quantity]" value="<%= item[:quantity] %>" min="1" step="1" required>
+          <input type="number" name="invoice[invoice_items][<%= index %>][unit_price]" value="<%= item[:unit_price] %>" min="0" step="1" required>
+          <input type="hidden" name="invoice[invoice_items][<%= index %>][tax_rate]" value="<%= item[:tax_rate] %>">
+          <button type="button" class="icon-button" aria-label="行を削除" data-action="click->invoice-form#removeRow">✕</button>
+        </div>
+      <% end %>
+    </div>
+
+    <template data-invoice-form-target="rowTemplate">
+      <div class="estimate-entry-row" data-invoice-form-target="row">
+        <div class="estimate-item-description">
+          <input type="text" name="invoice[invoice_items][__INDEX__][description]" placeholder="作業費" required>
+          <textarea name="invoice[invoice_items][__INDEX__][detail]" rows="2" placeholder="作業内容や内訳など"></textarea>
+        </div>
+        <input type="number" name="invoice[invoice_items][__INDEX__][quantity]" value="1" min="1" step="1" required>
+        <input type="number" name="invoice[invoice_items][__INDEX__][unit_price]" min="0" step="1" required>
+        <input type="hidden" name="invoice[invoice_items][__INDEX__][tax_rate]" value="0.1">
+        <button type="button" class="icon-button" aria-label="行を削除" data-action="click->invoice-form#removeRow">✕</button>
+      </div>
+    </template>
 
     <div class="totals">
       <div>

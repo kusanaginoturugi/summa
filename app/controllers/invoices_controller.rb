@@ -13,7 +13,7 @@ class InvoicesController < ApplicationController
   end
 
   def create
-    @invoice = Invoice.new(invoice_params)
+    @invoice = Invoice.new(invoice_attributes)
 
     if @invoice.valid?
       @invoice.save_with_voucher!
@@ -31,9 +31,10 @@ class InvoicesController < ApplicationController
   end
 
   def update
-    @invoice.assign_attributes(invoice_params)
+    attributes = invoice_attributes
+    @invoice.assign_attributes(attributes)
     if @invoice.valid?
-      @invoice.update_with_voucher!(invoice_params)
+      @invoice.update_with_voucher!(attributes)
       redirect_to @invoice, notice: t("invoices.flash.updated")
     else
       flash.now[:alert] = @invoice.errors.full_messages.join(" / ")
@@ -70,6 +71,28 @@ class InvoicesController < ApplicationController
 
   def invoice_params
     params.require(:invoice).permit(:invoice_number, :issuer, :client_name, :invoice_date, :due_date, :title, :items_json, :note)
+  end
+
+  def invoice_attributes
+    attributes = invoice_params.to_h
+    rows = params.require(:invoice).permit(
+      invoice_items: %i[description detail quantity unit_price tax_rate _destroy]
+    )[:invoice_items]
+    return attributes unless rows
+
+    items = rows.to_h.sort_by { |index, _row| index.to_i }.filter_map do |_index, row|
+      next if row["_destroy"] == "1"
+
+      {
+        description: row["description"].to_s,
+        detail: row["detail"].to_s,
+        quantity: row["quantity"].presence || 1,
+        unit_price: row["unit_price"].presence || 0,
+        tax_rate: row["tax_rate"].presence || 0.1
+      }
+    end
+    attributes["items_json"] = JSON.pretty_generate(items)
+    attributes
   end
 
   def default_invoice_date
