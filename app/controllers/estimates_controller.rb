@@ -1,5 +1,5 @@
 class EstimatesController < ApplicationController
-  before_action :set_estimate, only: :pdf
+  before_action :set_estimate, only: %i[edit update pdf]
 
   def index
     @estimates = Estimate.includes(:estimate_items).order(issued_on: :desc, created_at: :desc)
@@ -23,6 +23,19 @@ class EstimatesController < ApplicationController
       @estimate.estimate_items.build if @estimate.estimate_items.empty?
       flash.now[:alert] = @estimate.errors.full_messages.join(" / ")
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @estimate.update(estimate_params)
+      redirect_to estimates_path, notice: "見積書を更新しました"
+    else
+      @estimate.estimate_items.build if @estimate.estimate_items.empty?
+      flash.now[:alert] = @estimate.errors.full_messages.join(" / ")
+      render :edit, status: :unprocessable_entity
     end
   end
 

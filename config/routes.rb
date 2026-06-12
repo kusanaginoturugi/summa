@@ -25,7 +25,7 @@ Rails.application.routes.draw do
     patch :fiscal_year, on: :collection
   end
   resources :bank_imports, only: %i[new create]
-  resources :estimates, only: %i[index new create] do
+  resources :estimates, only: %i[index new create edit update] do
     get :pdf, on: :member
   end
   resources :accounts, only: %i[index new create edit update destroy] do

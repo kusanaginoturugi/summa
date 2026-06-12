@@ -45,6 +45,7 @@
                 <td><%= estimate.valid_until.strftime("%Y-%m-%d") %></td>
                 <td class="text-end"><%= number_with_delimiter(estimate.total.to_i) %> 円</td>
                 <td class="text-end">
+                  <%= link_to "編集", edit_estimate_path(estimate), class: "btn btn-outline-secondary btn-sm" %>
                   <%= link_to "PDF", pdf_estimate_path(estimate), class: "btn btn-outline-secondary btn-sm" %>
                 </td>
               </tr>
