@@ -16,7 +16,7 @@ default dates use the `yyyy/MM/dd` format.
 ```bash
 invoice generate --from "株式会社テスト" --to "山田太郎" \
     --item "作業費" --quantity 2 --rate 25000 \
-    --currency JPY --note "備考です"
+    --currency JPY --note "備考です" \
     --date "2026/06/30" --due "2026/7/31"
 ```
 
@@ -53,6 +53,11 @@ invoice generate \
     --note "備考です" \
     --output japanese-invoice.pdf
 ```
+
+Use one `--detail` for each `--item`, in the same order. Both actual newlines
+and escaped `\n` sequences are rendered as additional lines below the item
+name. Details are optional, so items without a matching detail are still
+generated normally.
 
 ### Estimate
 
