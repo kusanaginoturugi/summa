@@ -19,7 +19,7 @@ const (
 const (
 	subtotalLabel = "小計"
 	discountLabel = "割引"
-	taxLabel      = "税"
+	taxLabel      = "消費税"
 	totalLabel    = "合計"
 )
 

@@ -163,9 +163,9 @@ func generateDocument(cmd *cobra.Command, document *Invoice, importPath, output 
 		return err
 	}
 
-	writeLogo(&pdf, document.Logo, document.From)
 	writeTitle(&pdf, document.Title, document.Id, document.Date)
 	writeBillTo(&pdf, labels.recipient, document.To)
+	writeLogo(&pdf, document.Logo, document.From)
 	writeHeaderRow(&pdf)
 	subtotal := 0.0
 	for i := range document.Items {
