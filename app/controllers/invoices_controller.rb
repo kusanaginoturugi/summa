@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  before_action :set_invoice, only: %i[show edit update destroy export generate_pdf]
+  before_action :set_invoice, only: %i[show edit update destroy export pdf generate_pdf]
 
   def index
     @invoices = Invoice.order(invoice_date: :desc, invoice_number: :desc)
@@ -56,6 +56,16 @@ class InvoicesController < ApplicationController
       type: "application/json"
   end
 
+  def pdf
+    path = invoice_pdf_path
+    send_file path,
+      filename: "#{@invoice.invoice_number}.pdf",
+      type: "application/pdf",
+      disposition: "attachment"
+  rescue InvoicePdfGenerator::Error, InvoicePdfValidator::Error => e
+    redirect_to @invoice, alert: e.message
+  end
+
   def generate_pdf
     InvoicePdfGenerator.new(@invoice).generate!
     redirect_to @invoice, notice: t("invoices.flash.pdf_generated")
@@ -99,5 +109,13 @@ class InvoicesController < ApplicationController
     Date.new(current_fiscal_year, Date.current.month, Date.current.day)
   rescue Date::Error
     Date.current
+  end
+
+  def invoice_pdf_path
+    path = @invoice.pdf_path.presence
+    return path if path && File.file?(path)
+
+    InvoicePdfGenerator.new(@invoice).generate!
+    @invoice.reload.pdf_path
   end
 end

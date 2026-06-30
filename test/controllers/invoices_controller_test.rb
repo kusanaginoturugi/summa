@@ -32,7 +32,32 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "請求書一覧"
     assert_select "a", "請求書作成"
     assert_select "a[href='#{edit_invoice_path(invoice)}']", "編集"
+    assert_select "a[href='#{pdf_invoice_path(invoice)}']", "PDF"
     assert_select "form[action='#{generate_pdf_invoice_path(invoice)}'] button", "PDF生成"
+  end
+
+  test "downloads generated invoice pdf" do
+    output_path = Rails.root.join("tmp", "controller-test-invoice.pdf")
+    File.write(output_path, "%PDF-1.4\n")
+    invoice = Invoice.create!(
+      issuer: "株式会社発行元",
+      client_name: "株式会社テスト",
+      invoice_date: Date.new(2026, 6, 11),
+      due_date: Date.new(2026, 7, 11),
+      title: "開発費",
+      items_json: JSON.generate([
+        { description: "実装", quantity: 1, unit_price: 50_000, tax_rate: 0.1 }
+      ]),
+      pdf_path: output_path.to_s
+    )
+
+    get pdf_invoice_path(invoice)
+
+    assert_response :success
+    assert_equal "application/pdf", response.media_type
+    assert_match %(filename="#{invoice.invoice_number}.pdf"), response.headers["Content-Disposition"]
+  ensure
+    FileUtils.rm_f(output_path) if output_path
   end
 
   test "creates invoice and sales voucher" do

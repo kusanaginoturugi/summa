@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :vouchers, only: %i[index new create edit update destroy]
   resources :invoices do
     get :export, on: :member
+    get :pdf, on: :member
     post :generate_pdf, on: :member
   end
   get "vouchers/quick" => "vouchers#quick", as: :quick_vouchers
