@@ -2,12 +2,13 @@
 set -euxo pipefail
 
 APP_ROOT="/home/admin/summa"
+MISE_BIN="/home/admin/.local/bin"
 MISE_SHIMS="/home/admin/.local/share/mise/shims"
 
 cd "$APP_ROOT"
 
 export HOME="/home/admin"
-export PATH="$MISE_SHIMS:$PATH"
+export PATH="$MISE_BIN:$MISE_SHIMS:$PATH"
 export RAILS_ENV="production"
 export BUNDLE_GEMFILE="$APP_ROOT/Gemfile"
 export BUNDLE_PATH="$APP_ROOT/vendor/bundle"
