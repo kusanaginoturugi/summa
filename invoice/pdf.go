@@ -17,6 +17,12 @@ const (
 )
 
 const (
+	pageLeft            = 40.0
+	pageRight           = 555.0
+	minIssuerBlockWidth = 260.0
+)
+
+const (
 	subtotalLabel = "小計"
 	discountLabel = "割引"
 	taxLabel      = "消費税"
@@ -24,19 +30,21 @@ const (
 )
 
 func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
+	formattedFrom := strings.ReplaceAll(from, `\n`, "\n")
+	fromLines := strings.Split(formattedFrom, "\n")
+	blockX, blockWidth := rightAlignedBlock(pdf, fromLines, minIssuerBlockWidth)
+
 	if logo != "" {
 		width, height := getImageDimension(logo)
 		scaledWidth := 100.0
 		scaledHeight := float64(height) * scaledWidth / float64(width)
-		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
+		_ = pdf.Image(logo, blockX, pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
 		pdf.Br(scaledHeight + 24)
 	}
 	pdf.SetTextColor(55, 55, 55)
 
-	formattedFrom := strings.ReplaceAll(from, `\n`, "\n")
-	fromLines := strings.Split(formattedFrom, "\n")
-
 	for i := 0; i < len(fromLines); i++ {
+		pdf.SetX(blockX)
 		if i == 0 {
 			_ = pdf.SetFont("Document", "", 12)
 			_ = pdf.Cell(nil, fromLines[i])
@@ -49,7 +57,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	}
 	pdf.Br(21)
 	pdf.SetStrokeColor(225, 225, 225)
-	pdf.Line(pdf.GetX(), pdf.GetY(), 260, pdf.GetY())
+	pdf.Line(blockX, pdf.GetY(), blockX+blockWidth, pdf.GetY())
 	pdf.Br(36)
 }
 
@@ -175,14 +183,14 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 	pdf.SetX(amountColumnOffset)
 	_ = pdf.Cell(nil, formatCurrency(currency, total))
 
-	pdf.SetX(40)
+	pdf.SetX(pageLeft)
 	pdf.SetY(rowY + itemLineHeight)
 	_ = pdf.SetFont("Document", "", 9)
 	pdf.SetTextColor(90, 90, 90)
 
 	detailLines := append(itemLines[1:], documentLines(detail)...)
 	for _, line := range detailLines {
-		pdf.SetX(40 + detailIndent)
+		pdf.SetX(pageLeft + detailIndent)
 		_ = pdf.Cell(nil, line)
 		pdf.Br(detailLineHeight)
 	}
@@ -191,7 +199,7 @@ func writeRow(pdf *gopdf.GoPdf, currency, item, detail string, quantity int, rat
 	if len(detailLines) > 0 {
 		rowHeight += float64(len(detailLines)) * detailLineHeight
 	}
-	pdf.SetX(40)
+	pdf.SetX(pageLeft)
 	pdf.SetY(rowY + rowHeight)
 }
 
@@ -229,6 +237,28 @@ func writeTotal(pdf *gopdf.GoPdf, currency, label string, total float64) {
 	}
 	_ = pdf.Cell(nil, formatCurrency(currency, total))
 	pdf.Br(24)
+}
+
+func rightAlignedBlock(pdf *gopdf.GoPdf, lines []string, minWidth float64) (float64, float64) {
+	width := minWidth
+	for i, line := range lines {
+		if i == 0 {
+			_ = pdf.SetFont("Document", "", 12)
+		} else {
+			_ = pdf.SetFont("Document", "", 10)
+		}
+		lineWidth, err := pdf.MeasureTextWidth(line)
+		if err == nil && lineWidth > width {
+			width = lineWidth
+		}
+	}
+
+	maxWidth := pageRight - pageLeft
+	if width > maxWidth {
+		width = maxWidth
+	}
+
+	return pageRight - width, width
 }
 
 func getImageDimension(imagePath string) (int, int) {
