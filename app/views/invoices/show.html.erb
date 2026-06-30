@@ -8,7 +8,6 @@
     <div class="pill-row">
       <%= link_to t(".edit"), edit_invoice_path(@invoice), class: "pill" %>
       <%= link_to t(".export"), export_invoice_path(@invoice, format: :json), class: "pill pill--ghost" %>
-      <%= link_to t(".pdf"), pdf_invoice_path(@invoice), class: "pill pill--ghost" %>
       <%= button_to t(".generate_pdf"), generate_pdf_invoice_path(@invoice), method: :post, class: "pill pill--accent" %>
       <% if @invoice.voucher_id.present? %>
         <%= link_to t(".voucher"), edit_voucher_path(@invoice.voucher), class: "pill" %>
@@ -36,10 +35,6 @@
       <div>
         <p class="eyebrow"><%= t(".total") %></p>
         <p><%= number_with_delimiter(@invoice.total.to_i) %></p>
-      </div>
-      <div>
-        <p class="eyebrow"><%= t(".pdf_path") %></p>
-        <p><%= @invoice.pdf_path.presence || "—" %></p>
       </div>
     </div>
 

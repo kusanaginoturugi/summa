@@ -57,18 +57,13 @@ class InvoicesController < ApplicationController
   end
 
   def pdf
-    path = invoice_pdf_path
-    send_file path,
-      filename: "#{@invoice.invoice_number}.pdf",
-      type: "application/pdf",
-      disposition: "attachment"
+    send_invoice_pdf(invoice_pdf_path)
   rescue InvoicePdfGenerator::Error, InvoicePdfValidator::Error => e
     redirect_to @invoice, alert: e.message
   end
 
   def generate_pdf
-    InvoicePdfGenerator.new(@invoice).generate!
-    redirect_to @invoice, notice: t("invoices.flash.pdf_generated")
+    send_invoice_pdf(generate_invoice_pdf)
   rescue InvoicePdfGenerator::Error, InvoicePdfValidator::Error => e
     redirect_to @invoice, alert: e.message
   end
@@ -117,5 +112,17 @@ class InvoicesController < ApplicationController
 
     InvoicePdfGenerator.new(@invoice).generate!
     @invoice.reload.pdf_path
+  end
+
+  def generate_invoice_pdf
+    InvoicePdfGenerator.new(@invoice).generate!
+    @invoice.reload.pdf_path
+  end
+
+  def send_invoice_pdf(path)
+    send_file path,
+      filename: "#{@invoice.invoice_number}.pdf",
+      type: "application/pdf",
+      disposition: "attachment"
   end
 end

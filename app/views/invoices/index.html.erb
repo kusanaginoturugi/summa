@@ -47,10 +47,8 @@
                 <td class="text-end"><%= number_with_delimiter(invoice.total.to_i) %></td>
                 <td><%= invoice.issued_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
                 <td class="text-end">
-                  <%= link_to t(".show"), invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
                   <%= link_to t(".edit"), edit_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
                   <%= link_to t(".pdf"), pdf_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
-                  <%= button_to t(".generate_pdf"), generate_pdf_invoice_path(invoice), method: :post, class: "btn btn-outline-secondary btn-sm", form: { class: "d-inline" } %>
                 </td>
               </tr>
             <% end %>

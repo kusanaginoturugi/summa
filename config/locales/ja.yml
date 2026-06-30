@@ -160,7 +160,6 @@ ja:
       saved: "請求書を保存し、売上伝票を作成しました"
       updated: "請求書を更新し、売上伝票を更新しました"
       deleted: "請求書を削除しました"
-      pdf_generated: "PDFを生成し、発行情報を保存しました"
     index:
       title: "請求書一覧 | Summa"
       heading: "請求書一覧"
@@ -168,10 +167,8 @@ ja:
       saved_count: "保存済み %{count} 件"
       new_button: "請求書作成"
       empty: "まだ請求書がありません。"
-      show: "詳細"
       edit: "編集"
       pdf: "PDF"
-      generate_pdf: "PDF生成"
       th:
         invoice_number: "請求番号"
         invoice_date: "請求日"
@@ -209,13 +206,11 @@ ja:
       title: "%{number} | Summa"
       edit: "編集"
       export: "JSON出力"
-      pdf: "PDFダウンロード"
       generate_pdf: "PDF生成"
       voucher: "伝票を開く"
       invoice_date: "請求日"
       due_date: "支払期限"
       total: "合計"
-      pdf_path: "PDFパス"
       th:
         description: "品目"
         quantity: "数量"
