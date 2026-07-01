@@ -3,10 +3,14 @@
   <% return_to = local_assigns[:return_to] %>
   <% return_account_code = local_assigns[:return_account_code] %>
   <% return_description = local_assigns[:return_description] %>
+  <% return_from_month = local_assigns[:return_from_month] %>
+  <% return_to_month = local_assigns[:return_to_month] %>
   <% return_anchor = local_assigns[:return_anchor] %>
   <%= hidden_field_tag :return_to, return_to if return_to.present? %>
   <%= hidden_field_tag :return_account_code, return_account_code if return_account_code.present? %>
   <%= hidden_field_tag :return_description, return_description if return_description.present? %>
+  <%= hidden_field_tag :return_from_month, return_from_month if return_from_month.present? %>
+  <%= hidden_field_tag :return_to_month, return_to_month if return_to_month.present? %>
   <%= hidden_field_tag :return_anchor, return_anchor if return_anchor.present? %>
 
   <section class="card card--stacked">

@@ -608,6 +608,10 @@ textarea {
   min-width: 220px;
 }
 
+.voucher-filter-row input.voucher-filter-control--month {
+  min-width: 140px;
+}
+
 .register-actions-col {
   width: 156px;
   min-width: 156px;

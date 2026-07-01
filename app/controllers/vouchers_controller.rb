@@ -61,8 +61,9 @@ class VouchersController < ApplicationController
   end
 
   def destroy
+    load_return_context
     if @voucher.destroy
-      redirect_to vouchers_path, notice: t("vouchers.flash.deleted", default: "振替伝票を削除しました")
+      redirect_to voucher_update_redirect_path, notice: t("vouchers.flash.deleted", default: "振替伝票を削除しました")
     else
       redirect_to edit_voucher_path(@voucher), alert: @voucher.errors.full_messages.join(" / ")
     end
@@ -79,6 +80,8 @@ class VouchersController < ApplicationController
     load_accounts
     @account_code = resolve_register_account
     @description_filter = resolve_register_description_filter
+    @register_from_month = resolve_register_month_filter(:from)
+    @register_to_month = resolve_register_month_filter(:to)
     @edit_line_id = params[:edit_line_id].presence&.to_i
     prepare_register_view
     @entry_form = AccountRegisterEntryForm.new(
@@ -124,6 +127,8 @@ class VouchersController < ApplicationController
   def create_register
     load_accounts
     @description_filter = resolve_register_description_filter
+    @register_from_month = resolve_register_month_filter(:from)
+    @register_to_month = resolve_register_month_filter(:to)
     @entry_form = AccountRegisterEntryForm.new(register_entry_params)
 
     if @entry_form.save
@@ -132,6 +137,8 @@ class VouchersController < ApplicationController
       redirect_to register_vouchers_path(
         account_code: @entry_form.account_code,
         description: @description_filter,
+        from_month: @register_from_month,
+        to_month: @register_to_month,
         anchor: "register-entry",
         focus_entry: "recorded_on"
       ), notice: t("vouchers.flash.saved")
@@ -146,11 +153,13 @@ class VouchersController < ApplicationController
   def update_register_line
     load_accounts
     @description_filter = resolve_register_description_filter
+    @register_from_month = resolve_register_month_filter(:from)
+    @register_to_month = resolve_register_month_filter(:to)
     @edit_form = AccountRegisterLineUpdateForm.new(register_update_params.merge(line_id: params[:id]))
 
     if @edit_form.save
       session[:register_account_code] = @edit_form.account_code
-      redirect_to register_vouchers_path(account_code: @edit_form.account_code, description: @description_filter, anchor: "line-#{params[:id]}"), notice: t("vouchers.flash.updated")
+      redirect_to register_vouchers_path(account_code: @edit_form.account_code, description: @description_filter, from_month: @register_from_month, to_month: @register_to_month, anchor: "line-#{params[:id]}"), notice: t("vouchers.flash.updated")
     else
       @account_code = @edit_form.account_code.presence || resolve_register_account
       @edit_line_id = params[:id].to_i
@@ -227,7 +236,7 @@ class VouchersController < ApplicationController
     lines = VoucherLine.includes(voucher: :voucher_lines)
                        .joins(:voucher)
                        .where(account_code: @account.code)
-                       .where(vouchers: { recorded_on: current_fiscal_year_range })
+                       .where(vouchers: { recorded_on: register_period_range })
     if @description_filter.present?
       lines = lines.where("vouchers.description LIKE ?", "%#{@description_filter}%")
     end
@@ -313,6 +322,49 @@ class VouchersController < ApplicationController
     session[:register_description].presence
   end
 
+  def resolve_register_month_filter(bound)
+    key = bound == :from ? :register_from_month : :register_to_month
+    param_key = bound == :from ? :from_month : :to_month
+
+    if params.key?(param_key)
+      value = normalize_register_month(params[param_key])
+      value.present? ? session[key] = value : session.delete(key)
+      return value
+    end
+
+    normalize_register_month(session[key])
+  end
+
+  def normalize_register_month(value)
+    str = value.to_s.strip
+    return nil unless str.match?(/\A\d{4}-\d{2}\z/)
+
+    date = Date.strptime("#{str}-01", "%Y-%m-%d")
+    current_fiscal_year_range.cover?(date) ? str : nil
+  rescue ArgumentError
+    nil
+  end
+
+  def register_period_range
+    from_date = if @register_from_month.present?
+      Date.strptime("#{@register_from_month}-01", "%Y-%m-%d")
+    else
+      current_fiscal_year_range.begin
+    end
+
+    to_date = if @register_to_month.present?
+      Date.strptime("#{@register_to_month}-01", "%Y-%m-%d").end_of_month
+    else
+      current_fiscal_year_range.end
+    end
+
+    from_date = current_fiscal_year_range.begin if from_date < current_fiscal_year_range.begin
+    to_date = current_fiscal_year_range.end if to_date > current_fiscal_year_range.end
+    from_date, to_date = to_date.beginning_of_month, from_date.end_of_month if from_date > to_date
+
+    from_date..to_date
+  end
+
   def resolve_register_monthly_account
     if params.key?(:account_code)
       session[:register_monthly_account_code] = params[:account_code].presence
@@ -342,6 +394,8 @@ class VouchersController < ApplicationController
     @return_to = params[:return_to].presence
     @return_account_code = params[:return_account_code].presence
     @return_description = params[:return_description].presence
+    @return_from_month = params[:return_from_month].presence
+    @return_to_month = params[:return_to_month].presence
     @return_anchor = params[:return_anchor].presence
   end
 
@@ -351,6 +405,8 @@ class VouchersController < ApplicationController
     opts = {}
     opts[:account_code] = @return_account_code if @return_account_code.present?
     opts[:description] = @return_description if @return_description.present?
+    opts[:from_month] = @return_from_month if @return_from_month.present?
+    opts[:to_month] = @return_to_month if @return_to_month.present?
     opts[:anchor] = @return_anchor if @return_anchor.present?
     register_vouchers_path(**opts)
   end

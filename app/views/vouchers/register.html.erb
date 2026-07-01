@@ -22,8 +22,12 @@
         {}, class: "form-select form-select-sm voucher-filter-control", onchange: "this.form.submit()" %>
       <span class="text-muted voucher-filter-label"><%= t("vouchers.register.description_filter_label") %></span>
       <%= f.text_field :description, value: @description_filter, class: "form-control form-control-sm voucher-filter-control", placeholder: t("vouchers.register.description_filter_placeholder") %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_label") %></span>
+      <%= f.month_field :from_month, value: @register_from_month, class: "form-control form-control-sm voucher-filter-control voucher-filter-control--month" %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_separator") %></span>
+      <%= f.month_field :to_month, value: @register_to_month, class: "form-control form-control-sm voucher-filter-control voucher-filter-control--month" %>
       <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.register.description_filter_apply") %></button>
-      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.from_month.value=''; this.form.to_month.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
       <noscript>
         <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.index.filter_submit") %></button>
       </noscript>
@@ -148,6 +152,8 @@
                         return_to: "register",
                         return_account_code: @account_code,
                         return_description: @description_filter,
+                        return_from_month: @register_from_month,
+                        return_to_month: @register_to_month,
                         return_anchor: "line-#{row[:line].id}"
                       ),
                       class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
@@ -194,6 +200,9 @@
             </td>
             <td class="text-end register-actions-col">
               <%= hidden_field_tag "register_entry[account_code]", @account_code, form: "register-add-form" %>
+              <%= hidden_field_tag :description, @description_filter, form: "register-add-form" if @description_filter.present? %>
+              <%= hidden_field_tag :from_month, @register_from_month, form: "register-add-form" if @register_from_month.present? %>
+              <%= hidden_field_tag :to_month, @register_to_month, form: "register-add-form" if @register_to_month.present? %>
               <button type="submit" class="btn btn-primary btn-sm" form="register-add-form"><%= t("vouchers.register.add") %></button>
             </td>
           </tr>

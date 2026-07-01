@@ -20,3 +20,10 @@
 - `ImportRule.match_for` が存在しない科目・ロック中科目のルールを使わないよう変更。
 - 勘定科目一覧の `科目` / `明細` / `保存` / `削除` ボタンサイズを `account-row-action` で統一。
 - `bin/rails test` が成功。
+
+## 2026-07-01
+
+- 科目別入力に `from_month` / `to_month` の月単位フィルタを追加。
+- 科目別入力から詳細へ遷移した後、更新・削除時に表示期間条件を保持して戻るよう変更。
+- `VouchersControllerTest` に期間フィルタと削除後リダイレクトのテストを追加。
+- `bin/rails test test/controllers/vouchers_controller_test.rb` と `bin/rails test` が成功。
