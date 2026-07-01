@@ -587,8 +587,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-wrap: wrap;
 }
 
 .voucher-filter-row .voucher-filter-label {
@@ -602,14 +601,17 @@ textarea {
 
 .voucher-filter-row select.voucher-filter-control {
   min-width: 200px;
+  max-width: 240px;
 }
 
 .voucher-filter-row input.voucher-filter-control {
-  min-width: 220px;
+  min-width: 180px;
+  max-width: 220px;
 }
 
-.voucher-filter-row input.voucher-filter-control--month {
-  min-width: 140px;
+.voucher-filter-row .voucher-filter-control--month {
+  min-width: 128px;
+  max-width: 140px;
 }
 
 .register-actions-col {

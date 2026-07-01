@@ -228,6 +228,7 @@ class VouchersController < ApplicationController
     session[:register_account_code] = @account_code if @account_code.present?
     @accounts_map = @accounts.index_by(&:code).transform_values(&:name)
     @editable_accounts_map = @editable_accounts.index_by(&:code).transform_values(&:name)
+    @register_month_options = register_month_options
 
     @register_rows = []
     @current_balance = 0.to_d
@@ -236,12 +237,25 @@ class VouchersController < ApplicationController
     lines = VoucherLine.includes(voucher: :voucher_lines)
                        .joins(:voucher)
                        .where(account_code: @account.code)
-                       .where(vouchers: { recorded_on: register_period_range })
-    if @description_filter.present?
-      lines = lines.where("vouchers.description LIKE ?", "%#{@description_filter}%")
+                       .where(vouchers: { recorded_on: current_fiscal_year_range })
+                       .order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
+                       .to_a
+
+    balance_by_line_id = {}
+    running_balance = 0.to_d
+    lines.each do |line|
+      running_balance += line.debit_amount.to_d - line.credit_amount.to_d
+      balance_by_line_id[line.id] = running_balance
     end
-    lines = lines.order("vouchers.recorded_on ASC, vouchers.id ASC, voucher_lines.id ASC")
-    @register_rows = lines.map do |line|
+    @current_balance = running_balance
+
+    display_range = register_period_range
+    display_lines = lines.select { |line| display_range.cover?(line.voucher.recorded_on) }
+    if @description_filter.present?
+      display_lines = display_lines.select { |line| line.voucher.description.to_s.include?(@description_filter) }
+    end
+
+    @register_rows = display_lines.map do |line|
       counterpart = line.voucher.voucher_lines.find { |row| row.id != line.id }
       signed_amount = line.debit_amount.to_d - line.credit_amount.to_d
       {
@@ -249,7 +263,8 @@ class VouchersController < ApplicationController
         voucher: line.voucher,
         counterpart_code: counterpart&.account_code,
         counterpart_name: @accounts_map[counterpart&.account_code],
-        amount: signed_amount
+        amount: signed_amount,
+        balance: balance_by_line_id[line.id]
       }
     end
     @register_rows.sort_by! do |row|
@@ -261,8 +276,6 @@ class VouchersController < ApplicationController
         row[:line].id.to_i
       ]
     end
-    @current_balance = @register_rows.sum { |row| row[:amount].to_d }
-
     if @edit_line_id.present? && @edit_form.nil?
       row = @register_rows.find { |item| item[:line].id == @edit_line_id }
       if row
@@ -363,6 +376,12 @@ class VouchersController < ApplicationController
     from_date, to_date = to_date.beginning_of_month, from_date.end_of_month if from_date > to_date
 
     from_date..to_date
+  end
+
+  def register_month_options
+    (current_fiscal_year_range.begin.month..current_fiscal_year_range.end.month).map do |month|
+      ["#{month}月", format("%<year>04d-%<month>02d", year: current_fiscal_year, month: month)]
+    end
   end
 
   def resolve_register_monthly_account

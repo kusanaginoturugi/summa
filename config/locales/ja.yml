@@ -128,6 +128,7 @@ ja:
       description_filter_label: "摘要で絞り込み"
       description_filter_placeholder: "例）家賃"
       period_filter_label: "表示期間"
+      period_filter_blank: "指定なし"
       period_filter_separator: "〜"
       description_filter_apply: "適用"
       description_filter_clear: "クリア"

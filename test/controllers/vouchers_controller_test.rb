@@ -2,7 +2,7 @@ require "test_helper"
 
 class VouchersControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @bank = create_account!("10201", "山梨中央銀行", "asset")
+    @bank = create_account!("19991", "テスト銀行", "asset")
     @owner_draw = create_account!("303", "事業主貸", "equity")
   end
 
@@ -45,8 +45,9 @@ class VouchersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "td", text: "五月"
     assert_select "td", text: "四月", count: 0
-    assert_select "input[name='from_month'][value='2026-05']"
-    assert_select "input[name='to_month'][value='2026-05']"
+    assert_includes response.body, "-3,000"
+    assert_select "select[name='from_month'] option[selected][value='2026-05']", text: "5月"
+    assert_select "select[name='to_month'] option[selected][value='2026-05']", text: "5月"
   end
 
   private

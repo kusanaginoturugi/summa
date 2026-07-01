@@ -23,9 +23,13 @@
       <span class="text-muted voucher-filter-label"><%= t("vouchers.register.description_filter_label") %></span>
       <%= f.text_field :description, value: @description_filter, class: "form-control form-control-sm voucher-filter-control", placeholder: t("vouchers.register.description_filter_placeholder") %>
       <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_label") %></span>
-      <%= f.month_field :from_month, value: @register_from_month, class: "form-control form-control-sm voucher-filter-control voucher-filter-control--month" %>
+      <%= f.select :from_month,
+        options_for_select([[t("vouchers.register.period_filter_blank"), ""]] + @register_month_options, @register_from_month),
+        {}, class: "form-select form-select-sm voucher-filter-control voucher-filter-control--month" %>
       <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_separator") %></span>
-      <%= f.month_field :to_month, value: @register_to_month, class: "form-control form-control-sm voucher-filter-control voucher-filter-control--month" %>
+      <%= f.select :to_month,
+        options_for_select([[t("vouchers.register.period_filter_blank"), ""]] + @register_month_options, @register_to_month),
+        {}, class: "form-select form-select-sm voucher-filter-control voucher-filter-control--month" %>
       <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.register.description_filter_apply") %></button>
       <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.from_month.value=''; this.form.to_month.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
       <noscript>
@@ -66,13 +70,11 @@
           </tr>
         </thead>
         <tbody>
-          <% balance = 0.to_d %>
           <% @register_rows.each do |row| %>
-            <% balance += row[:amount].to_d %>
             <% editing = @edit_line_id.present? && @edit_line_id == row[:line].id %>
             <% if editing %>
               <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
-              <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
+              <% next_balance = row[:balance].to_d - row[:amount].to_d + @edit_form.amount.to_d %>
               <tr id="line-<%= row[:line].id %>" data-controller="register-focus" data-register-focus-focus-field-value="<%= params[:focus_edit] %>">
                 <td>
                   <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
@@ -143,7 +145,7 @@
                     class: "link-primary text-decoration-none") %>
                 </td>
                 <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
-                <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
+                <td class="text-end"><%= number_with_delimiter(row[:balance].to_d.to_i) %></td>
                 <td class="text-end register-actions-col">
                   <div class="d-inline-flex gap-1">
                     <%= link_to t("vouchers.register.detail"),
