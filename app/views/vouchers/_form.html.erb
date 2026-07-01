@@ -59,8 +59,8 @@
           <div class="entry-row" data-voucher-form-target="row" data-existing-line="true">
             <%= lf.text_field :account_code, placeholder: t("vouchers.new.account_code_placeholder"), list: "account-codes", inputmode: "numeric", data: { action: "input->voucher-form#updateAccountName focus->voucher-form#suggest", voucher_form_target: "accountCode" } %>
             <span class="account-name" data-voucher-form-target="accountName"><%= line.account.presence || "" %></span>
-            <%= lf.number_field :debit_amount, value: (line.debit_amount.to_d.zero? ? nil : line.debit_amount), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
-            <%= lf.number_field :credit_amount, value: (line.credit_amount.to_d.zero? ? nil : line.credit_amount), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
+            <%= lf.number_field :debit_amount, value: (line.debit_amount.to_d.zero? ? nil : line.debit_amount.to_d.to_i), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
+            <%= lf.number_field :credit_amount, value: (line.credit_amount.to_d.zero? ? nil : line.credit_amount.to_d.to_i), step: 1, min: 0, data: { action: "input->voucher-form#recalculate" }, inputmode: "numeric" %>
             <%= lf.text_field :note, placeholder: t("vouchers.new.note_placeholder") %>
             <%= lf.hidden_field :_destroy, value: 0, data: { voucher_form_target: "destroyFlag" } %>
             <button type="button" class="icon-button" aria-label="行を削除" data-action="click->voucher-form#removeRow">✕</button>
