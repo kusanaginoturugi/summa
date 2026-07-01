@@ -54,7 +54,9 @@
             <th><%= t("vouchers.register.th.recorded_on") %></th>
             <th><%= t("vouchers.register.th.counterpart") %></th>
             <th><%= t("vouchers.register.th.description") %></th>
-            <th class="text-end"><%= t("vouchers.register.th.amount") %></th>
+            <th class="text-end" title="<%= t("vouchers.register.th.amount_help") %>" aria-label="<%= t("vouchers.register.th.amount_help") %>">
+              <%= t("vouchers.register.th.amount") %>
+            </th>
             <th class="text-end"><%= t("vouchers.register.th.balance") %></th>
             <th class="register-actions-col"></th>
           </tr>

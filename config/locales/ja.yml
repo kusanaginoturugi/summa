@@ -140,7 +140,8 @@ ja:
         recorded_on: "起票日"
         description: "摘要"
         counterpart: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
+        amount_help: "正の金額は選択科目の残高増、負の金額は残高減として登録します。銀行科目では入金は正、出金は負で入力します。"
         balance: "貸借残高"
     register_monthly:
       title: "科目別月次集計 | Summa"
@@ -260,13 +261,13 @@ ja:
         recorded_on: "起票日"
         description: "摘要"
         counterpart_code: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
       account_register_line_update_form:
         account_code: "科目"
         recorded_on: "起票日"
         description: "摘要"
         counterpart_code: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
 
   errors:
     messages:
