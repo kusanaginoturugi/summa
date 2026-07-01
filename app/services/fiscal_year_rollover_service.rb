@@ -65,6 +65,7 @@ class FiscalYearRolloverService
       end
 
       voucher.save!
+      unlock_accounts!
     end
 
     voucher
@@ -125,6 +126,10 @@ class FiscalYearRolloverService
     )
     line.allow_locked_account = true
     line
+  end
+
+  def unlock_accounts!
+    Account.where(is_lock: true).update_all(is_lock: false, updated_at: Time.current)
   end
 
   def find_balancing_account_if_needed!(difference)

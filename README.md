@@ -57,5 +57,13 @@ go build -o invoice .
 bin/rails test
 ```
 
+## 運用
+
+勘定科目の編集ロックを一括解除する場合:
+
+```sh
+bin/rails accounts:unlock_all
+```
+
 ## ライセンス
 MIT License
