@@ -133,7 +133,7 @@ class VouchersController < ApplicationController
         account_code: @entry_form.account_code,
         description: @description_filter,
         anchor: "register-entry",
-        focus_entry: "counterpart"
+        focus_entry: "recorded_on"
       ), notice: t("vouchers.flash.saved")
     else
       @account_code = @entry_form.account_code.presence || resolve_register_account
