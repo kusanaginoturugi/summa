@@ -8,6 +8,14 @@ class BankCsvImportFormTest < ActiveSupport::TestCase
   end
 
   test "imports yamanashi bank csv with japanese headers" do
+    ImportRule.create!(
+      keyword: "ｶｸﾃｲｷﾖｼﾕﾂ",
+      direction: "withdrawal",
+      account_code: "11902",
+      match_type: "contains",
+      priority: 1
+    )
+
     form = BankCsvImportForm.new(
       file: csv_file,
       bank_account_code: "10201",
@@ -39,6 +47,7 @@ class BankCsvImportFormTest < ActiveSupport::TestCase
     end
     assert_equal 8, import.created_count
     assert_equal [], VoucherLine.last(16).select { |line| line.account.blank? }
+    assert_equal [], VoucherLine.where(account_code: "11902").pluck(:id)
   end
 
   private

@@ -288,6 +288,7 @@ ja:
     flash:
       imported: "%{count}件取り込みました"
       skipped: "（%{count}行をスキップ）"
+      invalid_import_rules_deleted: "無効な取込ルールを%{count}件削除しました"
     errors:
       account_missing: "科目コード%{code}が科目表に存在しません"
       invalid_date: "日付の解釈に失敗しました（値: %{value}）"
@@ -318,6 +319,14 @@ ja:
       column_hint: "ヘッダー無しなら列番号を入力（1始まり）、ヘッダー有りなら列名か番号どちらでも可。摘要はカンマ・空白区切りで複数指定可"
       preview: "プレビュー"
       preview_note: "取込前に行内容を確認できます。"
+      invalid_rules_tag: "RULES"
+      invalid_rules_heading: "無効な取込ルール"
+      invalid_rules_sub: "科目表に存在しない科目コードを参照している自動取込ルールです。取込時には使用されません。"
+      invalid_rules_delete: "無効なルールを削除"
+      invalid_rules_confirm: "科目表に存在しない科目コードを持つ取込ルールを削除します。よろしいですか？"
+      invalid_rules_th_keyword: "摘要"
+      invalid_rules_th_direction: "区分"
+      invalid_rules_th_account_code: "科目コード"
       submit: "この内容で保存"
       submit_note: "プレビューで確認した内容を振替伝票として保存します。"
     preview:
@@ -333,6 +342,10 @@ ja:
         cumulative: "累計金額"
       submit: "プレビュー内容を保存"
       submit_note: "表示中の行を振替伝票として登録します。"
+    directions:
+      deposit: "入金"
+      withdrawal: "出金"
+      both: "両方"
   accounts:
     categories:
       asset: "資産"
