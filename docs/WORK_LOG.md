@@ -34,3 +34,8 @@
 - 表示期間で絞り込んでも貸借残高が年度内の通し残高になるように変更。
 - 追加行の次回残高も年度内の現在残高を基準にするよう調整。
 - `bin/rails test test/controllers/vouchers_controller_test.rb` と `bin/rails test` が成功。
+
+## 2026-07-01
+
+- 科目別入力の表示期間月選択を `86px` 幅に調整し、フィルタ行が1行に収まりやすくした。
+- `bin/rails test` が成功。

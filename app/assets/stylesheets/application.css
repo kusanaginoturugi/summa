@@ -609,9 +609,10 @@ textarea {
   max-width: 220px;
 }
 
-.voucher-filter-row .voucher-filter-control--month {
-  min-width: 128px;
-  max-width: 140px;
+.voucher-filter-row select.voucher-filter-control--month {
+  width: 86px;
+  min-width: 86px;
+  max-width: 86px;
 }
 
 .register-actions-col {
