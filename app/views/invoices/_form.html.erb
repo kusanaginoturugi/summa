@@ -35,6 +35,10 @@
         <%= f.label :issuer, t("invoices.form.issuer") %>
         <%= f.text_area :issuer, rows: 3, required: true, placeholder: t("invoices.form.issuer_placeholder") %>
       </div>
+      <div class="field field--full">
+        <%= f.label :note, t("invoices.form.note") %>
+        <%= f.text_area :note, rows: 4, placeholder: t("invoices.form.note_placeholder") %>
+      </div>
     </div>
   </section>
 
@@ -97,11 +101,6 @@
         <p class="eyebrow"><%= t("invoices.form.total") %></p>
         <p class="totals__value"><%= number_with_delimiter(invoice.total.to_i) %></p>
       </div>
-    </div>
-
-    <div class="field">
-      <%= f.label :note, t("invoices.form.note") %>
-      <%= f.text_area :note, rows: 4 %>
     </div>
 
     <div class="actions">

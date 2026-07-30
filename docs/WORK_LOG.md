@@ -39,3 +39,10 @@
 
 - 科目別入力の表示期間月選択を `86px` 幅に調整し、フィルタ行が1行に収まりやすくした。
 - `bin/rails test` が成功。
+
+## 2026-07-30
+
+- 請求書フォームの備考欄を品目セクション下部から請求情報セクションへ移動。
+- 備考欄に振込先・支払条件向けの placeholder を追加。
+- 新規請求書作成時に前月請求書の備考を引き継ぐ `default_invoice_note` を追加。
+- `bin/rails test test/controllers/invoices_controller_test.rb` と `bin/rails test` が成功。

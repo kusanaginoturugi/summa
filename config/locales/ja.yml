@@ -205,6 +205,7 @@ ja:
       tax: "消費税"
       total: "合計"
       note: "備考"
+      note_placeholder: "振込先、支払条件、補足事項など"
       back: "一覧に戻る"
     show:
       title: "%{number} | Summa"

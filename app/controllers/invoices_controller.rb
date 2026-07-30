@@ -9,7 +9,8 @@ class InvoicesController < ApplicationController
   end
 
   def new
-    @invoice = Invoice.new(invoice_date: default_invoice_date)
+    invoice_date = default_invoice_date
+    @invoice = Invoice.new(invoice_date: invoice_date, note: default_invoice_note(invoice_date))
   end
 
   def create
@@ -104,6 +105,14 @@ class InvoicesController < ApplicationController
     Date.new(current_fiscal_year, Date.current.month, Date.current.day)
   rescue Date::Error
     Date.current
+  end
+
+  def default_invoice_note(invoice_date)
+    previous_month = invoice_date.prev_month.all_month
+    Invoice.where(invoice_date: previous_month)
+           .where.not(note: [ nil, "" ])
+           .order(invoice_date: :desc, id: :desc)
+           .pick(:note)
   end
 
   def invoice_pdf_path

@@ -130,6 +130,25 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 55_000, invoice.total.to_i
   end
 
+  test "prefills note from previous month invoice" do
+    Invoice.create!(
+      issuer: "株式会社発行元",
+      client_name: "株式会社テスト",
+      invoice_date: Date.current.prev_month.change(day: 10),
+      due_date: Date.current.prev_month.change(day: 28),
+      title: "前月分",
+      items_json: JSON.generate([
+        { description: "実装", quantity: 1, unit_price: 10_000, tax_rate: 0.1 }
+      ]),
+      note: "振込先\n山梨中央銀行"
+    )
+
+    get new_invoice_path
+
+    assert_response :success
+    assert_select "textarea[name='invoice[note]']", "振込先\n山梨中央銀行"
+  end
+
   test "shows invoice items in edit form" do
     invoice = Invoice.create!(
       issuer: "株式会社発行元",
@@ -154,6 +173,7 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='invoice[invoice_items][0][description]'][value='実装']"
     assert_select "textarea[name='invoice[invoice_items][0][detail]']", "既存の詳細"
     assert_select "input[name='invoice[invoice_items][0][quantity]'][value='2.0']"
+    assert_select "textarea[name='invoice[note]']"
   end
 
   test "updates invoice items and sales voucher" do
