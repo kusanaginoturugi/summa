@@ -54,3 +54,9 @@
 - 複製時の見積番号・発行日・有効期限は新規作成時の初期値に差し替えるようにした。
 - 見積フォームの税率・単価を整数表示にし、`10.0` や `50000.0` が出ないようにした。
 - `bin/rails test test/controllers/estimates_controller_test.rb` と `bin/rails test` が成功。
+
+## 2026-09-17
+
+- GitHub Actions の `scan_ruby` で `bin/bundler-audit` が依存 gem の脆弱性を検出して失敗していた。
+- `Gemfile.lock` を更新し、Rails を `8.1.3.1`、`json` を `3.0.2`、`loofah` を `2.25.2`、`mail` を `2.9.1`、`rails-html-sanitizer` を `1.7.1`、`sqlite3` を `2.9.6` へ更新。
+- `bin/bundler-audit update` 後の `bin/bundler-audit`、`bin/brakeman --no-pager`、`bin/rails test`、`bin/rubocop -f github` が成功。

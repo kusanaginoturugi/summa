@@ -40,3 +40,9 @@
 - 複製フォームでは発行元・見積先・税率・備考・明細を引き継ぐ。
 - 見積番号・発行日・有効期限は `EstimatesController#new_estimate_defaults` の値を使う。
 - 見積フォームの税率と単価は整数表示にしている。保存値は既存の decimal カラムのまま。
+
+## 2026-09-17 Ruby dependency security update
+
+- `scan_ruby` の bundler-audit 失敗は依存 gem の advisory 更新が原因。
+- `Gemfile.lock` は Rails `8.1.3.1` と関連する修正版 gem に更新済み。
+- ローカルでは最新 ruby-advisory-db で `bin/bundler-audit` が成功している。

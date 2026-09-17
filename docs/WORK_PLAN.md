@@ -42,3 +42,9 @@
 - 複製時は見積番号・発行日・有効期限を新規作成用の値に差し替える。
 - 税率と単価のフォーム表示から不要な小数点以下を消す。
 - controller test と全体テストで確認する。
+
+## 2026-09-17 Ruby dependency security update
+
+- GitHub Actions の `scan_ruby` で検出された bundler-audit の脆弱性警告を解消する。
+- advisory の修正版へ `Gemfile.lock` を更新する。
+- bundler-audit、brakeman、rubocop、全体テストで確認する。
