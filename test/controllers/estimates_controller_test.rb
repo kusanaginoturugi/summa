@@ -25,13 +25,14 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[name='estimate[estimate_number]'][value=?]", "EST-#{Date.current.strftime('%Y%m%d')}-001"
     assert_select "input[name='estimate[issued_on]'][value=?]", Date.current.to_s
     assert_select "input[name='estimate[valid_until]'][value=?]", 1.month.from_now.to_date.to_s
+    assert_select "input[name='estimate[tax_rate]'][value=?]", "10"
     assert_select "textarea[name='estimate[issuer]']", "株式会社テスト"
     assert_select "textarea[name='estimate[recipient]']", "山田太郎"
     assert_select "textarea[name='estimate[note]']", "支払条件を引き継ぐ"
     assert_select "input[name='estimate[estimate_items_attributes][0][description]'][value=?]", "作業費"
     assert_select "textarea[name='estimate[estimate_items_attributes][0][detail]']", "既存の詳細"
     assert_select "input[name='estimate[estimate_items_attributes][0][quantity]'][value=?]", "1"
-    assert_select "input[name='estimate[estimate_items_attributes][0][unit_price]'][value=?]", "50000.0"
+    assert_select "input[name='estimate[estimate_items_attributes][0][unit_price]'][value=?]", "50000"
   end
 
   test "creates an estimate" do

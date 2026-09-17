@@ -22,7 +22,7 @@
       </div>
       <div class="field">
         <%= f.label :tax_rate, "税率（%）" %>
-        <%= f.number_field :tax_rate, step: 0.01, min: 0, value: estimate.tax_rate || 0, required: true %>
+        <%= f.number_field :tax_rate, step: 1, min: 0, value: estimate.tax_rate.to_i, required: true %>
       </div>
       <div class="field field--full">
         <%= f.label :issuer, "発行元" %>
@@ -61,7 +61,7 @@
             <%= item_fields.text_area :detail, rows: 10, placeholder: "作業内容や内訳など" %>
           </div>
           <%= item_fields.number_field :quantity, value: item_fields.object.quantity || 1, min: 1, step: 1, required: true %>
-          <%= item_fields.number_field :unit_price, min: 0, step: 1, required: true, placeholder: "50000" %>
+          <%= item_fields.number_field :unit_price, value: item_fields.object.unit_price.to_i, min: 0, step: 1, required: true, placeholder: "50000" %>
           <%= item_fields.hidden_field :_destroy, value: 0, data: { estimate_form_target: "destroyFlag" } %>
           <button type="button" class="icon-button" aria-label="行を削除" data-action="click->estimate-form#removeRow">✕</button>
         </div>
