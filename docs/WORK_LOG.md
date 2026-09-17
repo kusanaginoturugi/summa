@@ -46,3 +46,11 @@
 - 備考欄に振込先・支払条件向けの placeholder を追加。
 - 新規請求書作成時に前月請求書の備考を引き継ぐ `default_invoice_note` を追加。
 - `bin/rails test test/controllers/invoices_controller_test.rb` と `bin/rails test` が成功。
+
+## 2026-09-17
+
+- 見積書一覧に `複製` ボタンを追加。
+- `GET /estimates/new?copy_from=ID` で既存見積の発行元・見積先・税率・備考・明細を引き継いだ新規作成フォームを表示するよう変更。
+- 複製時の見積番号・発行日・有効期限は新規作成時の初期値に差し替えるようにした。
+- 見積フォームの税率・単価を整数表示にし、`10.0` や `50000.0` が出ないようにした。
+- `bin/rails test test/controllers/estimates_controller_test.rb` と `bin/rails test` が成功。
