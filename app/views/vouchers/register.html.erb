@@ -22,8 +22,16 @@
         {}, class: "form-select form-select-sm voucher-filter-control", onchange: "this.form.submit()" %>
       <span class="text-muted voucher-filter-label"><%= t("vouchers.register.description_filter_label") %></span>
       <%= f.text_field :description, value: @description_filter, class: "form-control form-control-sm voucher-filter-control", placeholder: t("vouchers.register.description_filter_placeholder") %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_label") %></span>
+      <%= f.select :from_month,
+        options_for_select([[t("vouchers.register.period_filter_blank"), ""]] + @register_month_options, @register_from_month),
+        {}, class: "form-select form-select-sm voucher-filter-control voucher-filter-control--month" %>
+      <span class="text-muted voucher-filter-label"><%= t("vouchers.register.period_filter_separator") %></span>
+      <%= f.select :to_month,
+        options_for_select([[t("vouchers.register.period_filter_blank"), ""]] + @register_month_options, @register_to_month),
+        {}, class: "form-select form-select-sm voucher-filter-control voucher-filter-control--month" %>
       <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.register.description_filter_apply") %></button>
-      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="this.form.description.value=''; this.form.from_month.value=''; this.form.to_month.value=''; this.form.submit();"><%= t("vouchers.register.description_filter_clear") %></button>
       <noscript>
         <button type="submit" class="btn btn-outline-secondary btn-sm"><%= t("vouchers.index.filter_submit") %></button>
       </noscript>
@@ -54,19 +62,19 @@
             <th><%= t("vouchers.register.th.recorded_on") %></th>
             <th><%= t("vouchers.register.th.counterpart") %></th>
             <th><%= t("vouchers.register.th.description") %></th>
-            <th class="text-end"><%= t("vouchers.register.th.amount") %></th>
+            <th class="text-end" title="<%= t("vouchers.register.th.amount_help") %>" aria-label="<%= t("vouchers.register.th.amount_help") %>">
+              <%= t("vouchers.register.th.amount") %>
+            </th>
             <th class="text-end"><%= t("vouchers.register.th.balance") %></th>
             <th class="register-actions-col"></th>
           </tr>
         </thead>
         <tbody>
-          <% balance = 0.to_d %>
           <% @register_rows.each do |row| %>
-            <% balance += row[:amount].to_d %>
             <% editing = @edit_line_id.present? && @edit_line_id == row[:line].id %>
             <% if editing %>
               <% edit_form_id = "register-edit-form-#{row[:line].id}" %>
-              <% next_balance = balance - row[:amount].to_d + @edit_form.amount.to_d %>
+              <% next_balance = row[:balance].to_d - row[:amount].to_d + @edit_form.amount.to_d %>
               <tr id="line-<%= row[:line].id %>" data-controller="register-focus" data-register-focus-focus-field-value="<%= params[:focus_edit] %>">
                 <td>
                   <%= date_field_tag "register_update[recorded_on]", @edit_form.recorded_on || row[:voucher].recorded_on,
@@ -137,7 +145,7 @@
                     class: "link-primary text-decoration-none") %>
                 </td>
                 <td class="text-end"><%= number_with_delimiter(row[:amount].to_i) %></td>
-                <td class="text-end"><%= number_with_delimiter(balance.to_i) %></td>
+                <td class="text-end"><%= number_with_delimiter(row[:balance].to_d.to_i) %></td>
                 <td class="text-end register-actions-col">
                   <div class="d-inline-flex gap-1">
                     <%= link_to t("vouchers.register.detail"),
@@ -146,6 +154,8 @@
                         return_to: "register",
                         return_account_code: @account_code,
                         return_description: @description_filter,
+                        return_from_month: @register_from_month,
+                        return_to_month: @register_to_month,
                         return_anchor: "line-#{row[:line].id}"
                       ),
                       class: "btn btn-outline-secondary btn-sm py-0 px-2 text-nowrap register-edit-btn" %>
@@ -192,6 +202,9 @@
             </td>
             <td class="text-end register-actions-col">
               <%= hidden_field_tag "register_entry[account_code]", @account_code, form: "register-add-form" %>
+              <%= hidden_field_tag :description, @description_filter, form: "register-add-form" if @description_filter.present? %>
+              <%= hidden_field_tag :from_month, @register_from_month, form: "register-add-form" if @register_from_month.present? %>
+              <%= hidden_field_tag :to_month, @register_to_month, form: "register-add-form" if @register_to_month.present? %>
               <button type="submit" class="btn btn-primary btn-sm" form="register-add-form"><%= t("vouchers.register.add") %></button>
             </td>
           </tr>

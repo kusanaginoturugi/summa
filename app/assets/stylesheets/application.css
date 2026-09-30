@@ -587,8 +587,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-wrap: wrap;
 }
 
 .voucher-filter-row .voucher-filter-label {
@@ -602,10 +601,18 @@ textarea {
 
 .voucher-filter-row select.voucher-filter-control {
   min-width: 200px;
+  max-width: 240px;
 }
 
 .voucher-filter-row input.voucher-filter-control {
-  min-width: 220px;
+  min-width: 180px;
+  max-width: 220px;
+}
+
+.voucher-filter-row select.voucher-filter-control--month {
+  width: 86px;
+  min-width: 86px;
+  max-width: 86px;
 }
 
 .register-actions-col {
@@ -726,4 +733,12 @@ body {
 
 .btn-outline-secondary:hover {
   background: #e9ecef;
+}
+
+.account-row-action {
+  min-width: 62px;
+  height: 38px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  line-height: 1;
 }

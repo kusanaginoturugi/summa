@@ -7,6 +7,8 @@ class ImportRule < ApplicationRecord
   validates :match_type, inclusion: { in: MATCH_TYPES }
   validates :direction, inclusion: { in: DIRECTIONS }
 
+  scope :missing_account, -> { where.not(account_code: Account.select(:code)) }
+
   def self.record_from_voucher(voucher)
     return if voucher.nil?
 
@@ -38,7 +40,7 @@ class ImportRule < ApplicationRecord
 
   def self.match_for(description, direction)
     text = description.to_s.downcase
-    rules = where(direction: [direction, "both"]).order(:priority, :id)
+    rules = where(direction: [direction, "both"], account_code: Account.unlocked.select(:code)).order(:priority, :id)
     rules.find do |rule|
       key = rule.keyword.downcase
       case rule.match_type

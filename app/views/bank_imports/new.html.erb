@@ -17,6 +17,45 @@
     <div class="flash flash--alert"><%= flash[:alert] %></div>
   <% end %>
 
+  <% if @invalid_import_rules.present? %>
+    <section class="card card--stacked">
+      <div class="card__header">
+        <div>
+          <p class="eyebrow"><%= t(".invalid_rules_tag") %></p>
+          <h2><%= t(".invalid_rules_heading") %></h2>
+          <p class="sub"><%= t(".invalid_rules_sub") %></p>
+        </div>
+        <div class="card__actions">
+          <%= button_to t(".invalid_rules_delete"),
+            invalid_import_rules_bank_imports_path,
+            method: :delete,
+            class: "btn btn--ghost",
+            data: { turbo_confirm: t(".invalid_rules_confirm") } %>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th><%= t(".invalid_rules_th_keyword") %></th>
+              <th><%= t(".invalid_rules_th_direction") %></th>
+              <th><%= t(".invalid_rules_th_account_code") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @invalid_import_rules.each do |rule| %>
+              <tr>
+                <td><%= rule.keyword %></td>
+                <td><%= t("bank_imports.directions.#{rule.direction}", default: rule.direction) %></td>
+                <td><%= rule.account_code %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+
   <%= form_with model: @form, url: bank_imports_path, local: true, multipart: true, class: "voucher-form card", data: { controller: "bank-import-form", turbo: false } do |f| %>
     <div class="field-grid">
       <div class="field field--full">

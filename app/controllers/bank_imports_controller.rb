@@ -3,6 +3,7 @@ class BankImportsController < ApplicationController
     @accounts = Account.order(:code)
     @input_accounts = @accounts.reject(&:is_lock)
     @settings = BankImportSetting.order(:name)
+    @invalid_import_rules = ImportRule.missing_account.order(:id)
     @form = BankCsvImportForm.new(default_params)
 
     setting_id = selected_setting_id_for_new
@@ -21,6 +22,7 @@ class BankImportsController < ApplicationController
     @accounts = Account.order(:code)
     @input_accounts = @accounts.reject(&:is_lock)
     @settings = BankImportSetting.order(:name)
+    @invalid_import_rules = ImportRule.missing_account.order(:id)
     permitted = import_params
     remember_selected_setting(permitted[:setting_id])
     @form = BankCsvImportForm.new(permitted)
@@ -52,6 +54,11 @@ class BankImportsController < ApplicationController
       flash.now[:alert] = @form.errors.full_messages.join(" / ")
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def invalid_import_rules
+    count = ImportRule.missing_account.delete_all
+    redirect_to new_bank_import_path, notice: t("bank_imports.flash.invalid_import_rules_deleted", count: count)
   end
 
   private

@@ -194,15 +194,36 @@ class BankCsvImportForm
     counter_code = nil if counter_code.blank?
 
     if direction == :deposit
-      voucher.voucher_lines.build(account_code: bank_code, debit_amount: amount, credit_amount: 0)
-      voucher.voucher_lines.build(account_code: counter_code || deposit_code, debit_amount: 0, credit_amount: amount)
+      build_voucher_line(voucher, bank_code, debit: amount, credit: 0, role: "銀行科目")
+      build_voucher_line(voucher, counter_code || deposit_code, debit: 0, credit: amount, role: "入金相手科目")
     else
-      voucher.voucher_lines.build(account_code: counter_code || withdrawal_code, debit_amount: amount, credit_amount: 0)
-      voucher.voucher_lines.build(account_code: bank_code, debit_amount: 0, credit_amount: amount)
+      build_voucher_line(voucher, counter_code || withdrawal_code, debit: amount, credit: 0, role: "出金相手科目")
+      build_voucher_line(voucher, bank_code, debit: 0, credit: amount, role: "銀行科目")
     end
 
     voucher.save!
     @created_count += 1
+  end
+
+  def build_voucher_line(voucher, account_code, debit:, credit:, role:)
+    account = account_for_code!(account_code, role: role)
+    voucher.voucher_lines.build(
+      account_code: account.code,
+      account: account.name,
+      debit_amount: debit,
+      credit_amount: credit
+    )
+  end
+
+  def account_for_code!(account_code, role:)
+    code = account_code.to_s.strip
+    raise ArgumentError, "#{role}の科目コードが空です。" if code.blank?
+
+    account = Account.find_by(code: code)
+    raise ArgumentError, "#{role}の科目コード #{code} が科目表に存在しません。" if account.nil?
+    raise ArgumentError, "#{role}の科目コード #{code} はロックされているため使用できません。" if account.is_lock?
+
+    account
   end
 
   def parse_date(value)

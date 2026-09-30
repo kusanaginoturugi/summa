@@ -127,6 +127,9 @@ ja:
       account_label: "科目"
       description_filter_label: "摘要で絞り込み"
       description_filter_placeholder: "例）家賃"
+      period_filter_label: "表示期間"
+      period_filter_blank: "指定なし"
+      period_filter_separator: "〜"
       description_filter_apply: "適用"
       description_filter_clear: "クリア"
       description_placeholder: "摘要"
@@ -140,7 +143,8 @@ ja:
         recorded_on: "起票日"
         description: "摘要"
         counterpart: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
+        amount_help: "正の金額は選択科目の残高増、負の金額は残高減として登録します。銀行科目では入金は正、出金は負で入力します。"
         balance: "貸借残高"
     register_monthly:
       title: "科目別月次集計 | Summa"
@@ -160,7 +164,6 @@ ja:
       saved: "請求書を保存し、売上伝票を作成しました"
       updated: "請求書を更新し、売上伝票を更新しました"
       deleted: "請求書を削除しました"
-      pdf_generated: "PDFを生成し、発行情報を保存しました"
     index:
       title: "請求書一覧 | Summa"
       heading: "請求書一覧"
@@ -168,7 +171,8 @@ ja:
       saved_count: "保存済み %{count} 件"
       new_button: "請求書作成"
       empty: "まだ請求書がありません。"
-      show: "詳細"
+      edit: "編集"
+      pdf: "PDF"
       th:
         invoice_number: "請求番号"
         invoice_date: "請求日"
@@ -201,6 +205,7 @@ ja:
       tax: "消費税"
       total: "合計"
       note: "備考"
+      note_placeholder: "振込先、支払条件、補足事項など"
       back: "一覧に戻る"
     show:
       title: "%{number} | Summa"
@@ -211,7 +216,6 @@ ja:
       invoice_date: "請求日"
       due_date: "支払期限"
       total: "合計"
-      pdf_path: "PDFパス"
       th:
         description: "品目"
         quantity: "数量"
@@ -261,13 +265,13 @@ ja:
         recorded_on: "起票日"
         description: "摘要"
         counterpart_code: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
       account_register_line_update_form:
         account_code: "科目"
         recorded_on: "起票日"
         description: "摘要"
         counterpart_code: "資金移動（科目）"
-        amount: "費用"
+        amount: "入出金額"
 
   errors:
     messages:
@@ -288,6 +292,7 @@ ja:
     flash:
       imported: "%{count}件取り込みました"
       skipped: "（%{count}行をスキップ）"
+      invalid_import_rules_deleted: "無効な取込ルールを%{count}件削除しました"
     errors:
       account_missing: "科目コード%{code}が科目表に存在しません"
       invalid_date: "日付の解釈に失敗しました（値: %{value}）"
@@ -318,6 +323,14 @@ ja:
       column_hint: "ヘッダー無しなら列番号を入力（1始まり）、ヘッダー有りなら列名か番号どちらでも可。摘要はカンマ・空白区切りで複数指定可"
       preview: "プレビュー"
       preview_note: "取込前に行内容を確認できます。"
+      invalid_rules_tag: "RULES"
+      invalid_rules_heading: "無効な取込ルール"
+      invalid_rules_sub: "科目表に存在しない科目コードを参照している自動取込ルールです。取込時には使用されません。"
+      invalid_rules_delete: "無効なルールを削除"
+      invalid_rules_confirm: "科目表に存在しない科目コードを持つ取込ルールを削除します。よろしいですか？"
+      invalid_rules_th_keyword: "摘要"
+      invalid_rules_th_direction: "区分"
+      invalid_rules_th_account_code: "科目コード"
       submit: "この内容で保存"
       submit_note: "プレビューで確認した内容を振替伝票として保存します。"
     preview:
@@ -333,6 +346,10 @@ ja:
         cumulative: "累計金額"
       submit: "プレビュー内容を保存"
       submit_note: "表示中の行を振替伝票として登録します。"
+    directions:
+      deposit: "入金"
+      withdrawal: "出金"
+      both: "両方"
   accounts:
     categories:
       asset: "資産"

@@ -9,7 +9,30 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", "見積書一覧"
     assert_select "a", "見積書作成"
+    assert_select "a[href=?]", new_estimate_path(copy_from: estimate), "複製"
     assert_select "a[href=?]", edit_estimate_path(estimate), "編集"
+  end
+
+  test "copies an estimate into the new estimate form" do
+    estimate = create_estimate(
+      estimate_number: "EST-20260612-002",
+      note: "支払条件を引き継ぐ"
+    )
+
+    get new_estimate_path(copy_from: estimate)
+
+    assert_response :success
+    assert_select "input[name='estimate[estimate_number]'][value=?]", "EST-#{Date.current.strftime('%Y%m%d')}-001"
+    assert_select "input[name='estimate[issued_on]'][value=?]", Date.current.to_s
+    assert_select "input[name='estimate[valid_until]'][value=?]", 1.month.from_now.to_date.to_s
+    assert_select "input[name='estimate[tax_rate]'][value=?]", "10"
+    assert_select "textarea[name='estimate[issuer]']", "株式会社テスト"
+    assert_select "textarea[name='estimate[recipient]']", "山田太郎"
+    assert_select "textarea[name='estimate[note]']", "支払条件を引き継ぐ"
+    assert_select "input[name='estimate[estimate_items_attributes][0][description]'][value=?]", "作業費"
+    assert_select "textarea[name='estimate[estimate_items_attributes][0][detail]']", "既存の詳細"
+    assert_select "input[name='estimate[estimate_items_attributes][0][quantity]'][value=?]", "1"
+    assert_select "input[name='estimate[estimate_items_attributes][0][unit_price]'][value=?]", "50000"
   end
 
   test "creates an estimate" do
@@ -94,14 +117,15 @@ class EstimatesControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def create_estimate
+  def create_estimate(estimate_number: "EST-20260612-001", note: nil)
     Estimate.create!(
-      estimate_number: "EST-20260612-001",
+      estimate_number: estimate_number,
       issued_on: Date.new(2026, 6, 12),
       valid_until: Date.new(2026, 7, 12),
       issuer: "株式会社テスト",
       recipient: "山田太郎",
       tax_rate: 10,
+      note: note,
       estimate_items_attributes: {
         "0" => {
           description: "作業費",

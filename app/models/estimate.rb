@@ -23,6 +23,25 @@ class Estimate < ApplicationRecord
     subtotal + tax_amount
   end
 
+  def build_copy_for_new(estimate_number:, issued_on:, valid_until:)
+    copied_estimate = dup
+    copied_estimate.estimate_number = estimate_number
+    copied_estimate.issued_on = issued_on
+    copied_estimate.valid_until = valid_until
+
+    estimate_items.each do |item|
+      copied_estimate.estimate_items.build(
+        description: item.description,
+        detail: item.detail,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        position: item.position
+      )
+    end
+
+    copied_estimate
+  end
+
   private
 
   def assign_item_positions

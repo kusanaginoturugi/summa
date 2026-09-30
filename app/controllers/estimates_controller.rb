@@ -6,12 +6,14 @@ class EstimatesController < ApplicationController
   end
 
   def new
-    @estimate = Estimate.new(
-      estimate_number: next_estimate_number,
-      issued_on: Date.current,
-      valid_until: 1.month.from_now.to_date
-    )
-    @estimate.estimate_items.build
+    defaults = new_estimate_defaults
+    @estimate = if params[:copy_from].present?
+      Estimate.includes(:estimate_items).find(params[:copy_from]).build_copy_for_new(**defaults)
+    else
+      Estimate.new(defaults)
+    end
+
+    @estimate.estimate_items.build if @estimate.estimate_items.empty?
   end
 
   def create
@@ -60,6 +62,14 @@ class EstimatesController < ApplicationController
       :estimate_number, :issued_on, :valid_until, :issuer, :recipient, :tax_rate, :note,
       estimate_items_attributes: %i[id description detail quantity unit_price position _destroy]
     )
+  end
+
+  def new_estimate_defaults
+    {
+      estimate_number: next_estimate_number,
+      issued_on: Date.current,
+      valid_until: 1.month.from_now.to_date
+    }
   end
 
   def next_estimate_number

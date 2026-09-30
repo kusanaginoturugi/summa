@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :vouchers, only: %i[index new create edit update destroy]
   resources :invoices do
     get :export, on: :member
+    get :pdf, on: :member
     post :generate_pdf, on: :member
   end
   get "vouchers/quick" => "vouchers#quick", as: :quick_vouchers
@@ -24,7 +25,9 @@ Rails.application.routes.draw do
   resource :app_settings, only: [] do
     patch :fiscal_year, on: :collection
   end
-  resources :bank_imports, only: %i[new create]
+  resources :bank_imports, only: %i[new create] do
+    delete :invalid_import_rules, on: :collection
+  end
   resources :estimates, only: %i[index new create edit update] do
     get :pdf, on: :member
   end

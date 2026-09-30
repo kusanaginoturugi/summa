@@ -36,10 +36,6 @@
         <p class="eyebrow"><%= t(".total") %></p>
         <p><%= number_with_delimiter(@invoice.total.to_i) %></p>
       </div>
-      <div>
-        <p class="eyebrow"><%= t(".pdf_path") %></p>
-        <p><%= @invoice.pdf_path.presence || "—" %></p>
-      </div>
     </div>
 
     <div class="table-responsive">
