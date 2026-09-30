@@ -48,3 +48,8 @@
 - GitHub Actions の `scan_ruby` で検出された bundler-audit の脆弱性警告を解消する。
 - advisory の修正版へ `Gemfile.lock` を更新する。
 - bundler-audit、brakeman、rubocop、全体テストで確認する。
+
+## 2026-09-30 json 3.x によるトップページ 500 修正
+
+- セッション cookie 付きリクエストで `ActiveSupport::JSON.decode` が `ArgumentError` になる問題を直す。
+- `json` を 2.x 系に固定し、flash 付きリダイレクト後の表示を回帰テストで確認する。

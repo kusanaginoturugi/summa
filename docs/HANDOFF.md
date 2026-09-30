@@ -46,3 +46,9 @@
 - `scan_ruby` の bundler-audit 失敗は依存 gem の advisory 更新が原因。
 - `Gemfile.lock` は Rails `8.1.3.1` と関連する修正版 gem に更新済み。
 - ローカルでは最新 ruby-advisory-db で `bin/bundler-audit` が成功している。
+
+## 2026-09-30 json gem の固定
+
+- `json` 3.x は Rails 8.1.3.1 の `ActiveSupport::JSON.decode` と非互換で、cookie セッション読込時に 500 になる。
+- `Gemfile` で `json` を `~> 2.19` に固定している。Rails 側が対応したら外してよい。
+- 本番反映には `bundle install` とアプリの再起動が必要。

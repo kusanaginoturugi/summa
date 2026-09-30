@@ -60,3 +60,10 @@
 - GitHub Actions の `scan_ruby` で `bin/bundler-audit` が依存 gem の脆弱性を検出して失敗していた。
 - `Gemfile.lock` を更新し、Rails を `8.1.3.1`、`json` を `3.0.2`、`loofah` を `2.25.2`、`mail` を `2.9.1`、`rails-html-sanitizer` を `1.7.1`、`sqlite3` を `2.9.6` へ更新。
 - `bin/bundler-audit update` 後の `bin/bundler-audit`、`bin/brakeman --no-pager`、`bin/rails test`、`bin/rubocop -f github` が成功。
+
+## 2026-09-30
+
+- 本番で `/` が `ActionView::Template::Error (wrong number of arguments (given 2, expected 1))` で 500 になっていた。
+- 原因は `json 3.0.2` の `JSON.parse` が positional options hash を受けなくなり、ActiveSupport 8.1.3.1 の `JSON.parse(json, options)` が失敗すること。セッション cookie を読む `flash[:notice]` で発生する。
+- `Gemfile` で `json` を `~> 2.19` に固定し、`json 2.21.2` に更新。
+- flash 付きリダイレクト後に `/` を表示する controller test を追加。`bin/rails test`、`bin/rubocop`、`bin/bundler-audit` が成功。

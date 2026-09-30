@@ -36,6 +36,23 @@ class VouchersControllerTest < ActionDispatch::IntegrationTest
     )
   end
 
+  test "renders root with flash stored in session cookie" do
+    voucher = Voucher.create!(
+      recorded_on: Date.new(2026, 5, 31),
+      description: "事業主貸",
+      voucher_lines_attributes: {
+        "0" => { account_code: @owner_draw.code, debit_amount: 1000, credit_amount: 0 },
+        "1" => { account_code: @bank.code, debit_amount: 0, credit_amount: 1000 }
+      }
+    )
+    delete voucher_path(voucher)
+
+    get root_path
+
+    assert_response :success
+    assert_includes response.body, "振替伝票を削除しました"
+  end
+
   test "filters register rows by month range" do
     create_transfer!(Date.new(2026, 4, 30), "四月", 1000)
     create_transfer!(Date.new(2026, 5, 31), "五月", 2000)
