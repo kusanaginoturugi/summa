@@ -12,8 +12,7 @@ class InvoicesController < ApplicationController
     invoice_date = default_invoice_date
     defaults = {
       invoice_date: invoice_date,
-      due_date: invoice_date + 1.month,
-      note: default_invoice_note(invoice_date)
+      due_date: invoice_date + 1.month
     }
     @invoice = if params[:copy_from].present?
       source = Invoice.find(params[:copy_from])
@@ -21,7 +20,7 @@ class InvoicesController < ApplicationController
         .merge(defaults)
         .then { |attributes| Invoice.new(attributes) }
     else
-      Invoice.new(defaults)
+      Invoice.new(defaults.merge(note: default_invoice_note(invoice_date)))
     end
   end
 
