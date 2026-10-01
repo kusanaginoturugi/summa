@@ -25,7 +25,16 @@
   <% else %>
     <section class="card card--stacked">
       <div class="table-responsive">
-        <table class="table table-striped align-middle mb-0">
+        <table class="table table-striped align-middle mb-0 invoice-index-table">
+          <colgroup>
+            <col class="invoice-col-number">
+            <col class="invoice-col-date">
+            <col class="invoice-col-client">
+            <col class="invoice-col-title">
+            <col class="invoice-col-total">
+            <col class="invoice-col-issued">
+            <col class="invoice-col-actions">
+          </colgroup>
           <thead class="table-light">
             <tr>
               <th><%= t(".th.invoice_number") %></th>
@@ -42,14 +51,14 @@
               <tr>
                 <td><%= invoice.invoice_number %></td>
                 <td><%= invoice.invoice_date&.strftime("%Y-%m-%d") %></td>
-                <td><%= invoice.client_name %></td>
-                <td><%= invoice.title %></td>
+                <td class="invoice-cell-truncate" title="<%= invoice.client_name %>"><%= invoice.short_name.presence || invoice.client_name %></td>
+                <td class="invoice-cell-truncate" title="<%= invoice.title %>"><%= invoice.title %></td>
                 <td class="text-end"><%= number_with_delimiter(invoice.total.to_i) %></td>
                 <td><%= invoice.issued_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
-                <td class="text-end">
-                  <%= link_to "複製", new_invoice_path(copy_from: invoice), class: "btn btn-outline-secondary btn-sm" %>
-                  <%= link_to t(".edit"), edit_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
-                  <%= link_to t(".pdf"), pdf_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
+                <td class="text-end invoice-actions">
+                  <%= link_to "複製", new_invoice_path(copy_from: invoice), class: "btn btn-outline-secondary btn-sm invoice-action-button" %>
+                  <%= link_to t(".edit"), edit_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm invoice-action-button" %>
+                  <%= link_to t(".pdf"), pdf_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm invoice-action-button" %>
                 </td>
               </tr>
             <% end %>

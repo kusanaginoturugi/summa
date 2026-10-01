@@ -20,6 +20,10 @@
         <%= f.text_field :client_name, required: true %>
       </div>
       <div class="field">
+        <%= f.label :short_name, t("invoices.form.short_name") %>
+        <%= f.text_field :short_name %>
+      </div>
+      <div class="field">
         <%= f.label :invoice_date, t("invoices.form.invoice_date") %>
         <%= f.date_field :invoice_date, value: invoice.invoice_date, required: true %>
       </div>

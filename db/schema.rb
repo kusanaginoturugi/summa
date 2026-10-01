@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_01_000000) do
   create_table "accounts", force: :cascade do |t|
     t.string "category", null: false
     t.string "code", null: false
@@ -96,6 +96,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_000000) do
     t.text "items_json", null: false
     t.text "note"
     t.string "pdf_path"
+    t.string "short_name"
     t.decimal "subtotal", precision: 15, scale: 2, default: "0.0", null: false
     t.decimal "tax", precision: 15, scale: 2, default: "0.0", null: false
     t.string "title", null: false

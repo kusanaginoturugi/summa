@@ -195,6 +195,7 @@ ja:
       invoice_number: "請求番号"
       invoice_number_placeholder: "空なら 2026-06-001 形式で採番"
       client_name: "請求先"
+      short_name: "請求先の省略名"
       issuer: "発行元"
       issuer_placeholder: "会社名、住所、連絡先など"
       invoice_date: "請求日"

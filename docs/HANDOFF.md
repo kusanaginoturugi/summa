@@ -1,5 +1,12 @@
 # Handoff
 
+## 2026-10-01 請求書一覧の操作ボタン表示調整
+
+- 請求書一覧は `.invoice-index-table` の固定レイアウトで列幅を管理する。
+- 請求先・件名は `.invoice-cell-truncate` で省略表示され、`title` 属性で全文を確認できる。
+- 操作ボタン欄は `.invoice-actions` で改行を抑止する。
+- 請求先の表示は `short_name` 優先で、未入力なら `client_name` を使う。省略名は請求書フォームから編集でき、複製にも引き継ぐ。
+
 ## 2026-10-01 請求書複製作成
 
 - 請求書一覧の `複製` は `new_invoice_path(copy_from: invoice)` へ遷移する。

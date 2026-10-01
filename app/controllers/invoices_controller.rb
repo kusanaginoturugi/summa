@@ -17,7 +17,7 @@ class InvoicesController < ApplicationController
     }
     @invoice = if params[:copy_from].present?
       source = Invoice.find(params[:copy_from])
-      source.attributes.slice("issuer", "client_name", "title", "items_json", "note")
+      source.attributes.slice("issuer", "client_name", "short_name", "title", "items_json", "note")
         .merge(defaults)
         .then { |attributes| Invoice.new(attributes) }
     else
@@ -88,7 +88,7 @@ class InvoicesController < ApplicationController
   end
 
   def invoice_params
-    params.require(:invoice).permit(:invoice_number, :issuer, :client_name, :invoice_date, :due_date, :title, :items_json, :note)
+    params.require(:invoice).permit(:invoice_number, :issuer, :client_name, :short_name, :invoice_date, :due_date, :title, :items_json, :note)
   end
 
   def invoice_attributes

@@ -735,6 +735,34 @@ body {
   background: #e9ecef;
 }
 
+.invoice-index-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.invoice-col-number { width: 12%; }
+.invoice-col-date { width: 11%; }
+.invoice-col-client { width: 14%; }
+.invoice-col-title { width: 15%; }
+.invoice-col-total { width: 9%; }
+.invoice-col-issued { width: 17%; }
+.invoice-col-actions { width: 22%; }
+
+.invoice-cell-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invoice-actions {
+  white-space: nowrap;
+}
+
+.invoice-action-button {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
 .account-row-action {
   min-width: 62px;
   height: 38px;
