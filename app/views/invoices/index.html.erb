@@ -47,6 +47,7 @@
                 <td class="text-end"><%= number_with_delimiter(invoice.total.to_i) %></td>
                 <td><%= invoice.issued_at&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
                 <td class="text-end">
+                  <%= link_to "複製", new_invoice_path(copy_from: invoice), class: "btn btn-outline-secondary btn-sm" %>
                   <%= link_to t(".edit"), edit_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
                   <%= link_to t(".pdf"), pdf_invoice_path(invoice), class: "btn btn-outline-secondary btn-sm" %>
                 </td>

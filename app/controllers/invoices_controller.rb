@@ -10,7 +10,19 @@ class InvoicesController < ApplicationController
 
   def new
     invoice_date = default_invoice_date
-    @invoice = Invoice.new(invoice_date: invoice_date, note: default_invoice_note(invoice_date))
+    defaults = {
+      invoice_date: invoice_date,
+      due_date: invoice_date + 1.month,
+      note: default_invoice_note(invoice_date)
+    }
+    @invoice = if params[:copy_from].present?
+      source = Invoice.find(params[:copy_from])
+      source.attributes.slice("issuer", "client_name", "title", "items_json", "note")
+        .merge(defaults)
+        .then { |attributes| Invoice.new(attributes) }
+    else
+      Invoice.new(defaults)
+    end
   end
 
   def create
