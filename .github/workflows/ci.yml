@@ -141,7 +141,7 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh admin@showway-t4g.tailb46b1.ts.net << 'EOF'
+          ssh -o StrictHostKeyChecking=accept-new admin@showway-t4g.tailb46b1.ts.net << 'EOF'
           cd /home/admin/summa
           git config core.fileMode false
           git fetch origin
