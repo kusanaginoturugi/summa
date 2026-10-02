@@ -1,5 +1,10 @@
 # Handoff
 
+## 2026-10-02 Tailscale 経由のデプロイ
+
+- デプロイ構成・Secrets・Tailscale の設定は `docs/deploy.md` を参照。
+- 旧 Secrets `TAILSCALE_AUTH_KEY`, `EC2_HOST`, `EC2_PORT` は削除済み。最初に作った Tailscale auth key の revoke は未確認。
+
 ## 2026-10-01 請求書複製時の備考引き継ぎ修正
 
 - `InvoicesController#new` は複製時に複製元の `note` をそのまま引き継ぐ。前月の備考を使うのは通常の新規作成時だけ。

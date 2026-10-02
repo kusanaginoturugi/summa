@@ -1,5 +1,11 @@
 # Work Plan
 
+## 2026-10-02 Tailscale 経由のデプロイへ移行
+
+- 本番サーバーの SSH ポートをインターネットに公開せずにデプロイできるようにする。
+- GitHub Actions の runner を Tailscale の OAuth client で tailnet に参加させ、CI 専用鍵でコンテナへ SSH する。
+- 構成を `docs/deploy.md` にまとめる。
+
 ## 2026-10-01 請求書複製時の備考引き継ぎ修正
 
 - 複製元の備考が新規請求書の備考初期値に上書きされないようにする。

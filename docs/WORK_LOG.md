@@ -1,5 +1,12 @@
 # Work Log
 
+## 2026-10-02
+
+- `deploy` ジョブを `appleboy/ssh-action` による公開 SSH から、Tailscale 経由の SSH に変更。
+- 使い切りの auth key で 2 回目の実行が失敗したため、`tailscale/github-action@v3` と OAuth client（`tag:ci`）に切り替えた。
+- アプリは EC2 本体ではなく nspawn コンテナにあるため、接続先を `65522` 番にし、CI 専用鍵 `EC2_SSH_KEY` を作り直した。
+- run `36971777823` で全ジョブ成功。コンテナの `~/summa` が `9ff1992` に更新されたことを確認。
+
 ## 2026-10-01
 
 - 請求書複製時に `default_invoice_note` が複製元の備考を上書きしていたため、新規作成時だけ前月備考を初期値にするよう修正。
