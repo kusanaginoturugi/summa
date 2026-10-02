@@ -129,22 +129,22 @@ jobs:
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
 
-deploy:
-  if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  needs: [scan_ruby, scan_js, lint, test, system-test]
-  runs-on: ubuntu-latest
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [scan_ruby, scan_js, lint, test, system-test]
+    runs-on: ubuntu-latest
 
-  steps:
-    - uses: tailscale/github-action@v2
-      with:
-        authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+    steps:
+      - uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
-    - name: Deploy
-      run: |
-        ssh admin@showway-t4g.tailb46b1.ts.net << 'EOF'
-        cd /home/admin/summa
-        git config core.fileMode false
-        git fetch origin
-        git checkout origin/main -- scripts/deploy.sh
-        bash /home/admin/summa/scripts/d
-        EOF
+      - name: Deploy
+        run: |
+          ssh admin@showway-t4g.tailb46b1.ts.net << 'EOF'
+          cd /home/admin/summa
+          git config core.fileMode false
+          git fetch origin
+          git checkout origin/main -- scripts/deploy.sh
+          bash /home/admin/summa/scripts/deploy.sh
+          EOF
