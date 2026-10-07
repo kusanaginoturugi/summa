@@ -19,6 +19,22 @@ EC2 ホスト本体の `22` 番は Tailscale SSH が受けるが、CI はこれ�
 | `TS_OAUTH_SECRET` | Tailscale OAuth client の secret |
 | `EC2_SSH_KEY` | CI 専用 SSH 秘密鍵（ed25519、コメント `summa-ci`） |
 
+登録・更新は `gh secret set` で行う。値は後から読み出せないので、同じ名前で登録し直すと上書きになる。
+
+```sh
+# 対話で入力する（値は画面に表示されない）
+gh secret set TS_OAUTH_CLIENT_ID -R kusanaginoturugi/summa
+gh secret set TS_OAUTH_SECRET -R kusanaginoturugi/summa
+
+# 複数行の値（SSH 秘密鍵など）はファイルから入れる
+gh secret set EC2_SSH_KEY -R kusanaginoturugi/summa < 秘密鍵
+
+# 登録済みの名前を確認する
+gh secret list -R kusanaginoturugi/summa
+```
+
+`--body` で値を直接渡すとシェルの履歴に残るので使わない。
+
 ## Tailscale 側の設定
 
 - OAuth client: Settings → Trust credentials。スコープは `Auth Keys` の Write のみ、タグは `tag:ci`。
